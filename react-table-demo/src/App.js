@@ -6,7 +6,7 @@ import ScratchTable2 from "./components/ScratchTable2";
 function App() {
   return (
     <div className="App">
-      <ScratchTable />
+      {/* <ScratchTable /> */}
       <ScratchTable2 />
     </div>
   );
