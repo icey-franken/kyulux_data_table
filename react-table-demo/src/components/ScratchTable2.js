@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
-import { useTable, usePagination } from "react-table";
+import { useTable, usePagination, useSortBy } from "react-table";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -37,10 +37,11 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-			initialState: { pageSize: 10 },
-			autoResetPage: false,
+      initialState: { pageSize: 10 },
+      autoResetPage: false,
       // manualPagination: true,
     },
+    useSortBy,
     usePagination
   );
   console.log(tableInstance);
@@ -63,14 +64,35 @@ function Table({ columns, data }) {
   } = tableInstance;
   // Render the UI for your table
   return (
-    <>
+    <div>
       <table {...getTableProps()}>
-        <thead>
+        <thead style={{ position: "sticky", top: 0 }}>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-              ))}
+              {headerGroup.headers.map((column) => {
+                console.log(column.getSortByToggleProps());
+                return (
+                  <th
+                    className={
+                      column.isSorted
+                        ? column.isSortedDesc
+                          ? "descSort"
+                          : "ascSort"
+                        : ""
+                    }
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    <span>
+                      {column.render("Header")}
+                      {/* {column.isSorted
+                        ? column.isSortedDesc
+                          ? " ▼"
+                          : " ▲"
+                        : ""} */}
+                    </span>
+                  </th>
+                );
+              })}
             </tr>
           ))}
         </thead>
@@ -80,7 +102,6 @@ function Table({ columns, data }) {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
-                  // console.log(cell);
                   return (
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   );
@@ -91,6 +112,7 @@ function Table({ columns, data }) {
         </tbody>
       </table>
       {/* pagination components */}
+      {/* TODO: I want pagination component to remain in the center of the viewport */}
       <div className="pagination">
         <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
           {"<<"}
@@ -135,7 +157,7 @@ function Table({ columns, data }) {
           ))}
         </select>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -148,16 +170,16 @@ function TableContainer() {
     async function getData() {
       // we can only fetch 1000 entries at a time.
       // there are exactly 26,000 entries
-			// TODO: change skip to <= 25000
-			// 	set to 1000 for now so we don't hammer db with requests
-			for (let skip = 0; skip <= 1000; skip += 1000) {
+      // TODO: change skip to <= 25000
+      // 	set to 1000 for now so we don't hammer db with requests
+      for (let skip = 0; skip <= 1000; skip += 1000) {
         const res = await fetch(
           `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
         );
         const { results } = await res.json();
         console.log(results);
-				// setTableData(results)
-				// TODO: find way to stop page resetting to 1 each time results are added
+        // setTableData(results)
+        // TODO: find way to stop page resetting to 1 each time results are added
         setTableData((tableData) => [...tableData, ...results]);
       }
     }
