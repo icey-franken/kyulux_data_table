@@ -37,7 +37,8 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageSize: 10 },
+			initialState: { pageSize: 10 },
+			autoResetPage: false,
       // manualPagination: true,
     },
     usePagination
@@ -145,7 +146,7 @@ function TableContainer() {
   // load initial data.
   useEffect(() => {
     async function getData() {
-      // we can only fetch 1000 entries at a time
+      // we can only fetch 1000 entries at a time.
       // there are exactly 26,000 entries
 			// TODO: change skip to <= 25000
 			// 	set to 1000 for now so we don't hammer db with requests
