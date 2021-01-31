@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { useTable, usePagination } from "react-table";
 
@@ -37,7 +37,7 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageSize: 10},
+      initialState: { pageSize: 10 },
       // manualPagination: true,
     },
     usePagination
@@ -49,8 +49,8 @@ function Table({ columns, data }) {
     headerGroups,
     rows,
     prepareRow,
-		pageOptions,
-		pageCount,
+    pageOptions,
+    pageCount,
     page,
     state: { pageIndex, pageSize },
     gotoPage,
@@ -139,21 +139,33 @@ function Table({ columns, data }) {
 }
 
 function TableContainer() {
-  const [results, setResults] = useState([]);
+  const [tableData, setTableData] = useState([]);
   // const [headings, setHeadings] = useState([]);
 
+  // load initial data.
   useEffect(() => {
     async function getData() {
-      const res = await fetch("https://api.fda.gov/food/event.json?limit=50");
-      const { results } = await res.json();
-      setResults(results);
+      // we can only fetch 1000 entries at a time
+      // there are exactly 26,000 entries
+			// TODO: change skip to <= 25000
+			// 	set to 1000 for now so we don't hammer db with requests
+			for (let skip = 0; skip <= 1000; skip += 1000) {
+        const res = await fetch(
+          `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
+        );
+        const { results } = await res.json();
+        console.log(results);
+				// setTableData(results)
+				// TODO: find way to stop page resetting to 1 each time results are added
+        setTableData((tableData) => [...tableData, ...results]);
+      }
     }
     getData();
   }, []);
 
-  const data = React.useMemo(() => {
+  const data = useMemo(() => {
     const flatData = [];
-    results.forEach((row) => {
+    tableData.forEach((row) => {
       const subRow = row;
       // turn array of outcomes into ';' separated string
       if (Array.isArray(subRow.outcomes)) {
@@ -165,7 +177,7 @@ function TableContainer() {
         subRow.reactions = subRow.reactions.join("; ");
       }
 
-      //convert dates to common format
+      //TODO: convert dates to common format
 
       // flatten products - multiple products may be responsible for the same adverse reaction. We include these as separate rows.
       if (Array.isArray(row.products)) {
@@ -177,9 +189,9 @@ function TableContainer() {
       }
     });
     return flatData;
-  }, [results]);
+  }, [tableData]);
 
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         Header: "Consumer",
