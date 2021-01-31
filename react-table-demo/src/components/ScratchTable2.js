@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useTable } from "react-table";
-
-// import makeData from "./makeData";
+import { useTable, usePagination } from "react-table";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -35,43 +33,108 @@ const Styles = styled.div`
 
 function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
+  const tableInstance = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageSize: 10},
+      // manualPagination: true,
+    },
+    usePagination
+  );
+  console.log(tableInstance);
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({
-    columns,
-    data,
-  });
-
+		pageOptions,
+		pageCount,
+    page,
+    state: { pageIndex, pageSize },
+    gotoPage,
+    previousPage,
+    nextPage,
+    setPageSize,
+    canPreviousPage,
+    canNextPage,
+  } = tableInstance;
   // Render the UI for your table
   return (
-    <table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row, i) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                // console.log(cell);
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
-              })}
+    <>
+      <table {...getTableProps()}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              ))}
             </tr>
-          );
-        })}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map((row, i) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  // console.log(cell);
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      {/* pagination components */}
+      <div className="pagination">
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {"<<"}
+        </button>{" "}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {"<"}
+        </button>{" "}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {">"}
+        </button>{" "}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {">>"}
+        </button>{" "}
+        <span>
+          Page{" "}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{" "}
+        </span>
+        <span>
+          | Go to page:{" "}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={(e) => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0;
+              gotoPage(page);
+            }}
+            style={{ width: "100px" }}
+          />
+        </span>{" "}
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+          }}
+        >
+          {[10, 20, 30, 40, 50].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
+    </>
   );
 }
 
@@ -81,71 +144,39 @@ function TableContainer() {
 
   useEffect(() => {
     async function getData() {
-      const res = await fetch("https://api.fda.gov/food/event.json?limit=100");
+      const res = await fetch("https://api.fda.gov/food/event.json?limit=50");
       const { results } = await res.json();
       setResults(results);
     }
     getData();
   }, []);
+
   const data = React.useMemo(() => {
-    // const rawData = [
-    //   {
-    //     consumer: { age: "22", age_unit: "day(s)", gender: "M" },
-    //     date_created: "20150501",
-    //     date_started: null,
-    //     outcomes: [
-    //       "Life Threatening",
-    //       "Hospitalization",
-    //       "Required Intervention",
-    //     ],
-    //     products: [
-    //       // "deal with this",
-    //       {
-    //         industry_code: "40",
-    //         industry_name: "Baby Food Products",
-    //         name_brand: "ENFAMIL VARIETY OF INFANT FORMULA POWDER NOT PROVIDED",
-    //         role: "SUSPECT",
-    //       },
-    //       {
-    //         industry_code: "123",
-    //         industry_name: "asdfasdf",
-    //         name_brand: "great value",
-    //         role: "SUSPECT",
-    //       },
-    //     ],
-    //     reactions: [
-    //       "MENTAL DISORDER",
-    //       "CRONOBACTER INFECTION",
-    //       "ENTEROBACTER INFECTION",
-    //       "CRONOBACTER TEST POSITIVE",
-    //       "RESPIRATORY FAILURE",
-    //       "MENINGITIS",
-    //       "DYSPNOEA",
-    //       "LYMPHADENOPATHY",
-    //       "BETA HAEMOLYTIC STREPTOCOCCAL INFECTION",
-    //       "SEPSIS",
-    //       "WHITE BLOOD CELL COUNT INCREASED",
-    //     ],
-    //     report_number: "185603",
-    //   },
-		// ];
-		const rawData = results
-		console.log(results)
-    const flattenedData = [];
-    rawData.forEach((row) => {
-			const subRow = row;
-			// console.log(row.products)
-			if(Array.isArray(row.products)){
-				row.products.forEach((product) => {
-					subRow.products = product;
-					flattenedData.push({ ...subRow });
-				});
-			} else{
-				flattenedData.push({ ...subRow });
-			}
+    const flatData = [];
+    results.forEach((row) => {
+      const subRow = row;
+      // turn array of outcomes into ';' separated string
+      if (Array.isArray(subRow.outcomes)) {
+        subRow.outcomes = subRow.outcomes.join("; ");
+      }
+
+      // turn array of reactions into ';' separated string
+      if (Array.isArray(subRow.reactions)) {
+        subRow.reactions = subRow.reactions.join("; ");
+      }
+
+      //convert dates to common format
+
+      // flatten products - multiple products may be responsible for the same adverse reaction. We include these as separate rows.
+      if (Array.isArray(row.products)) {
+        row.products.forEach((product) => {
+          flatData.push({ ...subRow, products: product });
+        });
+      } else {
+        flatData.push({ ...subRow });
+      }
     });
-    // console.log("flat data: ", flattenedData);
-    return flattenedData;
+    return flatData;
   }, [results]);
 
   const columns = React.useMemo(
@@ -181,10 +212,6 @@ function TableContainer() {
           { Header: "Name Brand", accessor: "products.name_brand" },
           { Header: "Role", accessor: "products.role" },
         ],
-        Cell: ({ cell: { value } }) => {
-          // console.log("value", value);
-          return <span style={{ color: "red" }}>{value}</span>;
-        },
       },
       { Header: "Reactions", accessor: "reactions" },
       { Header: "Report Number", accessor: "report_number" },
