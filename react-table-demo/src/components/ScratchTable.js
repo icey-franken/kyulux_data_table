@@ -11,13 +11,82 @@ export default function ScratchTable() {
     async function getData() {
       const res = await fetch("https://api.fda.gov/food/event.json?limit=10");
       const { results } = await res.json();
-      const headingObjects = Object.keys(results[0]).map((accessor) => ({
-        Header: titleCase(accessor),
-        accessor,
-      }));
-      console.log(headingObjects);
+      const headingObjects = Object.keys(results[0]).map((accessor) => {
+        return {
+          Header: titleCase(accessor),
+          accessor,
+          Cell: (row) => {
+            const values = row.value;
+						const type = typeof values;
+						console.log('values and type', values, type)
+            if (type === "string") {
+							console.log('hits string. Value:', values)
+              return <div>{row.values}</div>;
+            } else if (Array.isArray(values)) {
+              return (
+                <div>
+                  {values.map((value, idx) => {
+                    if (typeof value === "object") {
+                      return Object.values(value).map((val, idx) => (
+                        <div key={idx}>{val}</div>
+                      ));
+                    } else {
+                      return <div key={idx}>{value}</div>;
+                    }
+                  })}
+                </div>
+              );
+            } else if (values && type === "object") {
+              console.log(values);
+              // debugger;
+              console.log("value keys if object: ", Object.keys(values));
+              console.log("is object");
+              console.log(
+                "object keys of value if object: ",
+                Object.keys(values)
+              );
+              // return Object.keys(value).map((accessor) => {
+              //   return {
+              //     Header: titleCase(accessor),
+              //     accessor,
+              //   };
+              // });
+              return (
+                <div>
+                  {Object.values(values).map((value, idx) => (
+                    <div key={idx}>{value}</div>
+                  ))}
+                </div>
+              );
+              // return <div>object buddy</div>;
+            } else{
+              return <div>{row.values}</div>;
+						}
+            // console.log("row.value", row.value);
+            // console.log("accessor", accessor);
+            // // const rowVal = Array.isArray(row.row.original[accessor])
+            // console.log("row.row", row.row);
+            // console.log("typeof", typeof row.row.original[accessor]);
+            // console.log("isArray", Array.isArray(row.value));
+
+            // console.log("row@accessor", row.row.original[accessor]);
+            // console.log(row.row.original[accessor])
+            // return row
+            // return (
+            //   <div>
+            //     <span className="class-for-name">
+            //       {/* {row.row.product.name} */}
+            //     </span>
+            //     <span className="class-for-description">
+            //       {/* {row.row.product.description} */}
+            //     </span>
+            //   </div>
+            // );
+          },
+        };
+      });
       setHeadings(headingObjects);
-      console.log("results in fn", results);
+      // console.log("results in fn", results);
       // setResults(results);
       setResults([
         {
@@ -25,9 +94,12 @@ export default function ScratchTable() {
           date_created: "20150501",
           date_started: null,
           outcomes: [
-            "Life Threatening", "Hospitalization", "Required Intervention"
+            "Life Threatening",
+            "Hospitalization",
+            "Required Intervention",
           ],
           // products: [
+          //   // "deal with this",
           //   {
           //     industry_code: "40",
           //     industry_name: "Baby Food Products",
@@ -47,7 +119,7 @@ export default function ScratchTable() {
             "LYMPHADENOPATHY",
             "BETA HAEMOLYTIC STREPTOCOCCAL INFECTION",
             "SEPSIS",
-            "WHITE BLOOD CELL COUNT INCREASED"
+            "WHITE BLOOD CELL COUNT INCREASED",
           ],
           report_number: "185603",
         },
@@ -56,29 +128,11 @@ export default function ScratchTable() {
     getData();
   }, []);
 
-  useEffect(() => {
-    console.log("results: ", results);
-  }, [results]);
+  // useEffect(() => {
+  //   console.log("results: ", results);
+  // }, [results]);
 
-  const data = React.useMemo(
-    () => results,
-    [results]
-    // [
-    //   {
-    //     col1: "Consumer",
-    //     col2: "World",
-    //   },
-    //   {
-    //     col1: "react-table",
-    //     col2: "rocks",
-    //   },
-    //   {
-    //     col1: "whatever",
-    //     col2: "you want",
-    //   },
-    // ],
-    // []
-  );
+  const data = React.useMemo(() => results, [results]);
 
   const columns = React.useMemo(() => headings, [headings]);
 
