@@ -12,5 +12,6 @@ code {
     monospace;
 }
 
-@import './App.css';
-@import './Table.css';
+@import './styles/App.css';
+@import './styles/Table.css';
+@import './styles/SortingModal.css'

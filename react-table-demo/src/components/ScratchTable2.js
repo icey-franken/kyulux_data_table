@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { useTable, usePagination, useSortBy } from "react-table";
+import SortingModal from "./SortingModal";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -33,6 +34,13 @@ const Styles = styled.div`
 
 function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
+
+  const [showModal, setShowModal] = useState(false);
+
+  const onSortingChange = (e) => {
+    setShowModal(false);
+  };
+
   const tableInstance = useTable(
     {
       columns,
@@ -40,11 +48,11 @@ function Table({ columns, data }) {
       initialState: { pageSize: 10 },
       autoResetPage: false,
       // manualPagination: true,
+      onSortingChange,
     },
     useSortBy,
     usePagination
   );
-  console.log(tableInstance);
   const {
     getTableProps,
     getTableBodyProps,
@@ -65,36 +73,48 @@ function Table({ columns, data }) {
   // Render the UI for your table
   return (
     <div>
+      <SortingModal showModal={showModal} />
       <table {...getTableProps()}>
-        <thead style={{ position: "sticky", top: 0 }}>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => {
-                console.log(column.getSortByToggleProps());
-                return (
-                  <th
-                    className={
-                      column.isSorted
-                        ? column.isSortedDesc
-                          ? "descSort"
-                          : "ascSort"
-                        : ""
-                    }
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    <span>
-                      {column.render("Header")}
-                      {/* {column.isSorted
+        <thead>
+          {headerGroups.map((headerGroup) => {
+            return (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => {
+                  const props = column.getHeaderProps(
+                    column.getSortByToggleProps()
+                  );
+                  return (
+                    <th
+                      className={
+                        column.isSorted
+                          ? column.isSortedDesc
+                            ? "descSort"
+                            : "ascSort"
+                          : ""
+                      }
+                      {...props}
+                      // {...column.getHeaderProps(column.getSortByToggleProps())}
+                      onClick={(e) => {
+                        setShowModal(true);
+                        props.onClick(e);
+                        // TODO: find a way to remove modal after sorting complete
+                        setShowModal(false);
+                      }}
+                    >
+                      <span>
+                        {column.render("Header")}
+                        {/* {column.isSorted
                         ? column.isSortedDesc
                           ? " ▼"
                           : " ▲"
                         : ""} */}
-                    </span>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
+                      </span>
+                    </th>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
           {page.map((row, i) => {
