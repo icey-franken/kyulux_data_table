@@ -36,19 +36,23 @@ function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
 
   const [showModal, setShowModal] = useState(false);
-
-  const onSortingChange = (e) => {
-    setShowModal(false);
-  };
+  useEffect(() => {
+    console.log("show modal changed", showModal);
+  }, [showModal]);
+  // const onSortingChange = (e) => {
+  //   setShowModal(false);
+  // };
 
   const tableInstance = useTable(
     {
       columns,
       data,
       initialState: { pageSize: 10 },
-      autoResetPage: false,
+			autoResetPage: false,
+			loading: true,
+			LoadingComponent: SortingModal
       // manualPagination: true,
-      onSortingChange,
+      // onSortingChange,
     },
     useSortBy,
     usePagination
@@ -71,10 +75,20 @@ function Table({ columns, data }) {
     canNextPage,
   } = tableInstance;
   // Render the UI for your table
+
+  // useEffect(() => {
+  //   console.log("hits page use effect");
+  //   setShowModal(false);
+  // }, [page]);
+  useEffect(() => {
+    console.log("hits rows use effect");
+    console.log(rows);
+    setShowModal(false);
+  }, [rows]);
   return (
     <div>
-      <SortingModal showModal={showModal} />
-      <table {...getTableProps()}>
+      {/* <SortingModal showModal={true} /> */}
+      <table {...getTableProps()} className='-striped -highlight'>
         <thead>
           {headerGroups.map((headerGroup) => {
             return (
@@ -98,7 +112,7 @@ function Table({ columns, data }) {
                         setShowModal(true);
                         props.onClick(e);
                         // TODO: find a way to remove modal after sorting complete
-                        setShowModal(false);
+                        // setTimeout(setShowModal(false), 1000);
                       }}
                     >
                       <span>
@@ -190,8 +204,10 @@ function TableContainer() {
     async function getData() {
       // we can only fetch 1000 entries at a time.
       // there are exactly 26,000 entries
-      // TODO: change skip to <= 25000
+      // TODO: change skip to <= 25000 and change if statement
       // 	set to 1000 for now so we don't hammer db with requests
+      // 	if statement to eliminate regrabbing same data on page refresh
+      // if (tableData.length < 1) {
       for (let skip = 0; skip <= 1000; skip += 1000) {
         const res = await fetch(
           `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
@@ -202,6 +218,7 @@ function TableContainer() {
         // TODO: find way to stop page resetting to 1 each time results are added
         setTableData((tableData) => [...tableData, ...results]);
       }
+      // }
     }
     getData();
   }, []);
