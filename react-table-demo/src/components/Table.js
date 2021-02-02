@@ -9,23 +9,10 @@ import {
   useResizeColumns,
   useBlockLayout,
 } from "react-table";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
+import Header from "./Header";
+import Body from "./Body";
 import Pagination from "./Pagination";
-
-const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
-  ...draggableStyle,
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
-
-  // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
-
-  // ...(!isDragging && { transform: "translate(0,0)" }),
-  // ...(isDropAnimating && { transitionDuration: "0.001s" }),
-
-  // styles we need to apply on draggables
-});
 
 export default function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
@@ -68,8 +55,8 @@ export default function Table({ columns, data }) {
     useResizeColumns
   );
 
-  const currentColOrder = React.useRef();
-
+  const headerProps = { setColumnOrder, headerGroups, allColumns };
+  const bodyProps = { getTableBodyProps, prepareRow, page };
   const paginationProps = {
     pageIndex,
     pageSize,
@@ -85,145 +72,12 @@ export default function Table({ columns, data }) {
   };
 
   // Render the UI for your table
-  console.log(getTableProps());
   return (
     <>
       <div {...getTableProps()} className="table">
-        <div>
-          {headerGroups.map((headerGroup, idx) => (
-            <DragDropContext
-              key={idx}
-              onDragStart={() => {
-                currentColOrder.current = allColumns.map((o) => o.id);
-              }}
-              onDragUpdate={(dragUpdateObj, b) => {
-                // console.log("onDragUpdate", dragUpdateObj, b);
-                const colOrder = [...currentColOrder.current];
-                const sIndex = dragUpdateObj.source.index;
-                const dIndex =
-                  dragUpdateObj.destination && dragUpdateObj.destination.index;
-                if (typeof sIndex === "number" && typeof dIndex === "number") {
-                  colOrder.splice(sIndex, 1);
-                  colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-                  setColumnOrder(colOrder);
-                }
-              }}
-            >
-              <Droppable droppableId="droppable" direction="horizontal">
-                {(droppableProvided, snapshot) => (
-                  <div
-                    {...headerGroup.getHeaderGroupProps()}
-                    ref={droppableProvided.innerRef}
-                    className="row header-group"
-                  >
-                    {headerGroup.headers.map((column, index) => {
-                      const props = column.getHeaderProps(
-                        column.getSortByToggleProps()
-                      );
-                      return (
-                        <Draggable
-                          key={column.id}
-                          draggableId={column.id}
-                          index={index}
-                          isDragDisabled={!column.accessor}
-                        >
-                          {(provided, snapshot) => {
-                            // console.log(column.getHeaderProps());
-                            // const {
-                            //   style,
-                            //   ...extraProps
-                            // } = column.getHeaderProps();
-                            // console.log(style, extraProps);
-                            // console.log(props)
-                            console.log(column.getHeaderProps());
-                            console.log(column.getResizerProps());
-                            return (
-                              <div
-                                {...props}
-                                className={`cell header
-                                  ${
-                                    column.isSorted
-                                      ? column.isSortedDesc
-                                        ? "descSort"
-                                        : "ascSort"
-                                      : ""
-                                  }`}
-                                // {...column.getHeaderProps(column.getSortByToggleProps())}
-                                // onClick={(e) => {
-                                //   console.log(column);
-                                //   // setShowModal(true);
-                                //   props.onClick(e);
-                                // TODO: find a way to remove modal after sorting complete
-                                // setTimeout(setShowModal(false), 1000);
-                                // }}
-                              >
-                                <div
-                                  // {...extraProps}
-                                  ref={provided.innerRef}
-                                  style={{
-                                    ...getItemStyle(
-                                      snapshot,
-                                      provided.draggableProps.style
-                                    ),
-                                    // ...style
-                                  }}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  {column.render("Header")}
-                                  <div
-                                    {...column.getResizerProps()}
-                                    className={`resizer ${
-                                      column.isResizing ? "isResizing" : ""
-                                    }`}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          }}
-                        </Draggable>
-                      );
-                    })}
-                    {droppableProvided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          ))}
-        </div>
-
-        <div className="rows" {...getTableBodyProps()}>
-          {page.map((row, i) => {
-            prepareRow(row);
-            const props = row.getRowProps();
-            return (
-              <div
-                {...props}
-                style={{
-                  ...props.style,
-                  backgroundColor: `${
-                    i % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
-                  }`,
-                }}
-                // onHover={()=>}
-                className="row body"
-                key={i}
-              >
-                {row.cells.map((cell, idx) => {
-                  return (
-                    <div {...cell.getCellProps()} className="cell" key={idx}>
-                      {cell.render("Cell")}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+        <Header headerProps={headerProps} />
+        <Body bodyProps={bodyProps} />
       </div>
-      {/* <pre>
-        <code>{JSON.stringify(state, null, 2)}</code>
-      </pre> */}
       <Pagination paginationProps={paginationProps} />
     </>
   );

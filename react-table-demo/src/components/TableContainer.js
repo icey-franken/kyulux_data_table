@@ -37,7 +37,8 @@ const Styles = styled.div`
   }
 
   .row.header-group {
-    height: 21px;
+		height: 21px;
+		white-space: nowrap
     /* margin: 10px!important; */
   }
 
@@ -188,7 +189,7 @@ export default function TableContainer() {
             accessor: "consumer.gender",
             width: 66,
           },
-        ],
+				],
       },
       {
         Header: "Date Created",

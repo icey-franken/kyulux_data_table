@@ -12,7 +12,6 @@
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",
     "react-table": "^7.6.3",
-    "react-table-hoc-draggable-columns": "^1.2.5",
     "styled-components": "^5.2.1",
     "web-vitals": "^0.2.4"
   },
