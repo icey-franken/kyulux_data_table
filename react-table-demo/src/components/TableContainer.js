@@ -1,7 +1,6 @@
 // filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
 // freeze header pane https://codesandbox.io/s/k9n3y82wov
 
-
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 import styled from "styled-components";
@@ -42,10 +41,20 @@ const Styles = styled.div`
   }
 
   .header-group {
-		height: 20px;
-		white-space: nowrap;
-		display: inline-block;
+    height: 40px;
+    background-color: lightgrey;
+    white-space: nowrap;
+    display: inline-block;
+    box-sizing: border-box;
+		line-height: 30px;
+		border: 1px solid green;
     /* margin: 10px!important; */
+  }
+  .header.cell {
+    /* border: 1px solid green; */
+    height: 100%;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
   }
 
   .row.body:hover {
@@ -195,7 +204,7 @@ export default function TableContainer() {
             accessor: "consumer.gender",
             width: 66,
           },
-				],
+        ],
       },
       {
         Header: "Date Created",

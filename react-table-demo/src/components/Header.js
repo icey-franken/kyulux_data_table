@@ -1,50 +1,49 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export default function HeaderComp({ headerProps }) {
   const { setColumnOrder, headerGroups, allColumns } = headerProps;
-  const currentColOrder = useRef();
+	const currentColOrder = useRef();
+	const [resizing, setResizing] = useState(false)
   // ---------------------------------------
-  // const getItemStyle = (snapshot, draggableStyle, column) => {
-  //   console.log(snapshot, column);
-  //   const { isDragging, isDropAnimating } = snapshot;
-  //   const { isResizing } = column;
-  //   console.log(isResizing);
-  // 	const itemStyle =
-  // 	//  isResizing
-  //     // ? {background: 'grey'}
-  // 		// :
-  // 		{
-  //         ...draggableStyle,
-  //         // some basic styles to make the items look a bit nicer
-  //         userSelect: "none",
+  const getItemStyle = (snapshot, draggableStyle, column) => {
+    console.log(snapshot, column);
+    const { isDragging, isDropAnimating } = snapshot;
+    const { isResizing } = column;
+    console.log("isResizing?: ", isResizing);
+    const itemStyle = isResizing
+      ? { background: "grey" }
+      : {
+          ...draggableStyle,
+          // some basic styles to make the items look a bit nicer
+          userSelect: "none",
 
-  // 				// change background colour if dragging
-  // 				//TODO: add a delay to avoid quick switch to green when resizing
-  //         background: isDragging ? "lightgreen" : "grey",
+          // change background colour if dragging
+          //TODO: add a delay to avoid quick switch to green when resizing
+          background: isDragging ? "lightgreen" : "initial",
 
-  //         ...(!isDragging && { transform: "translate(0,0)" }),
-  //         ...(isDropAnimating && { transitionDuration: "0.001s" }),
+          // ...(!isDragging && { transform: "translate(0,0)" }),
+          ...(isDropAnimating && { transitionDuration: "0.001s" }),
 
-  //         // styles we need to apply on draggables
-  //       };
-  //   // console.log(itemStyle);
-  //   return itemStyle;
-  // };
+          // styles we need to apply on draggables
+        };
+    // console.log(itemStyle);
+    return itemStyle;
+  };
 
-  const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
-    ...draggableStyle,
-    // some basic styles to make the items look a bit nicer
-    userSelect: "none",
+  // const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
+  //   ...draggableStyle,
+  //   // some basic styles to make the items look a bit nicer
+  //   userSelect: "none",
 
-    // change background colour if dragging
-    background: isDragging ? "lightgreen" : "grey",
+  //   // change background colour if dragging
+  //   background: isDragging ? "lightgreen" : "grey",
 
-    ...(!isDragging && { transform: "translate(0,0)" }),
-    ...(isDropAnimating && { transitionDuration: "0.001s" }),
+  //   ...(!isDragging && { transform: "translate(0,0)" }),
+  //   ...(isDropAnimating && { transitionDuration: "0.001s" }),
 
-    // styles we need to apply on draggables
-  });
+  //   // styles we need to apply on draggables
+  // });
   // ---------------------------------------
 
   const handleDragStart = (dragStartObj) => {
@@ -57,22 +56,17 @@ export default function HeaderComp({ headerProps }) {
 
   const handleDragUpdate = (dragUpdateObj, b) => {
     console.log(dragUpdateObj, b);
-    // if (!allColumns[dragUpdateObj.source.index].isResizing) {
-    console.log("hits handle drag update");
-    const colOrder = [...currentColOrder.current];
-    console.log(colOrder);
-    const sIndex = dragUpdateObj.source.index;
-    const dIndex = dragUpdateObj.destination && dragUpdateObj.destination.index;
-
-    // console.log(dragUpdateObj);
-
-    if (typeof sIndex === "number" && typeof dIndex === "number") {
-      colOrder.splice(sIndex, 1);
-      colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-      setColumnOrder(colOrder);
-      console.log("hits");
+    if (!allColumns[dragUpdateObj.source.index].isResizing) {
+      const colOrder = [...currentColOrder.current];
+      const sIndex = dragUpdateObj.source.index;
+      const dIndex =
+        dragUpdateObj.destination && dragUpdateObj.destination.index;
+      if (typeof sIndex === "number" && typeof dIndex === "number") {
+        colOrder.splice(sIndex, 1);
+        colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
+        setColumnOrder(colOrder);
+      }
     }
-    // }
   };
 
   return (
@@ -130,7 +124,7 @@ export default function HeaderComp({ headerProps }) {
                           <div
                             {...props}
                             className={`cell header
-														${column.isSorted ? (column.isSortedDesc ? "descSort" : "ascSort") : ""}`}
+														${column.isSorted ? (column.isSortedDesc ? "descSort" : "ascSort") : "noSort"}`}
                             // {...column.getHeaderProps(column.getSortByToggleProps())}
                             onClick={(e) => {
                               // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
@@ -140,8 +134,8 @@ export default function HeaderComp({ headerProps }) {
                               // TODO: add loading modal while sorting
                               // TODO: find a way to remove modal after sorting complete
                             }}
-                          >
-                            <div
+                          // >
+                          //   <div
                               // {...extraProps}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
@@ -152,7 +146,7 @@ export default function HeaderComp({ headerProps }) {
                                   provided.draggableProps.style,
                                   column
                                 ),
-                                // ...style
+                                ...props.style
                               }}
                               // {...dragProps}
                             >
@@ -164,7 +158,7 @@ export default function HeaderComp({ headerProps }) {
                                 }`}
                               />
                             </div>
-                          </div>
+                          // </div>
                         );
                       }}
                     </Draggable>
