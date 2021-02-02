@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import {
   useTable,
@@ -10,8 +10,7 @@ import {
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import makeData from "./makeData";
-import Pagination from './Pagination';
-
+import Pagination from "./Pagination";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -22,7 +21,7 @@ const Styles = styled.div`
 
   .table {
     border: 1px solid #000;
-    max-width: 700px;
+    /* max-width: 700px; */
     overflow-x: auto;
   }
 
@@ -36,7 +35,7 @@ const Styles = styled.div`
 
   .row {
     border-bottom: 1px solid #000;
-    height: 32px;
+    height: 200px;
 
     &.body {
       :last-child {
@@ -76,7 +75,7 @@ function Table({ columns, data }) {
 
   const defaultColumn = React.useMemo(
     () => ({
-      width: 150,
+      width: 200,
     }),
     []
   );
@@ -242,55 +241,150 @@ function Table({ columns, data }) {
       {/* <pre>
         <code>{JSON.stringify(state, null, 2)}</code>
       </pre> */}
-			<Pagination paginationProps={paginationProps}/>
+      <Pagination paginationProps={paginationProps} />
     </>
   );
 }
 
 function App() {
-  const columns = React.useMemo(
+  const [tableData, setTableData] = useState([]);
+  // const [headings, setHeadings] = useState([]);
+
+  // load initial data.
+  useEffect(() => {
+    async function getData() {
+      // we can only fetch 1000 entries at a time.
+      // there are exactly 26,000 entries
+      // TODO: change skip to <= 25000 and change if statement
+      // 	set to 1000 for now so we don't hammer db with requests
+      // 	if statement to eliminate regrabbing same data on page refresh
+      // if (tableData.length < 1) {
+      for (let skip = 0; skip <= 1000; skip += 1000) {
+        const res = await fetch(
+          `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
+        );
+        const { results } = await res.json();
+        console.log(results);
+        // setTableData(results)
+        // TODO: find way to stop page resetting to 1 each time results are added
+        setTableData((tableData) => [...tableData, ...results]);
+      }
+      // }
+    }
+    getData();
+  }, []);
+
+  const data = useMemo(() => {
+    const flatData = [];
+    tableData.forEach((row) => {
+      const subRow = row;
+      // turn array of outcomes into ';' separated string
+      if (Array.isArray(subRow.outcomes)) {
+        subRow.outcomes = subRow.outcomes.join("; ");
+      }
+
+      // turn array of reactions into ';' separated string
+      if (Array.isArray(subRow.reactions)) {
+        subRow.reactions = subRow.reactions.join("; ");
+      }
+
+      //TODO: convert dates to common format
+
+      // flatten products - multiple products may be responsible for the same adverse reaction. We include these as separate rows.
+      if (Array.isArray(row.products)) {
+        row.products.forEach((product) => {
+          flatData.push({ ...subRow, products: product });
+        });
+      } else {
+        flatData.push({ ...subRow });
+      }
+    });
+    return flatData;
+  }, [tableData]);
+
+  const columns = useMemo(
     () => [
       {
-        Header: "Name",
-        columns: [
-          {
-            Header: "First Name",
-            accessor: "firstName",
-          },
-          {
-            Header: "Last Name",
-            accessor: "lastName",
-          },
-        ],
-      },
-      {
-        Header: "Info",
+        Header: "Consumer",
         columns: [
           {
             Header: "Age",
-            accessor: "age",
-            width: 50,
+            accessor: "consumer.age",
+            Cell: ({ cell: { value } }) => (
+              <span style={{ color: "red" }}>{value}</span>
+            ),
           },
           {
-            Header: "Visits",
-            accessor: "visits",
-            width: 60,
+            Header: "Age Unit",
+            accessor: "consumer.age_unit",
           },
           {
-            Header: "Status",
-            accessor: "status",
-          },
-          {
-            Header: "Profile Progress",
-            accessor: "progress",
+            Header: "Gender",
+            accessor: "consumer.gender",
           },
         ],
       },
+      { Header: "Date Created", accessor: "date_created" },
+      { Header: "Date Started", accessor: "date_started" },
+      { Header: "Outcomes", accessor: "outcomes" },
+      {
+        Header: "Products",
+        columns: [
+          { Header: "Industry Code", accessor: "products.industry_code" },
+          { Header: "Industry Name", accessor: "products.industry_name" },
+          { Header: "Name Brand", accessor: "products.name_brand" },
+          { Header: "Role", accessor: "products.role" },
+        ],
+      },
+      { Header: "Reactions", accessor: "reactions" },
+      { Header: "Report Number", accessor: "report_number" },
     ],
     []
   );
 
-  const data = React.useMemo(() => makeData(10), []);
+  // const columns = React.useMemo(
+  //   () => [
+  //     {
+  //       Header: "Name",
+  //       columns: [
+  //         {
+  //           Header: "First Name",
+  //           accessor: "firstName",
+  //         },
+  //         {
+  //           Header: "Last Name",
+  //           accessor: "lastName",
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       Header: "Info",
+  //       columns: [
+  //         {
+  //           Header: "Age",
+  //           accessor: "age",
+  //           width: 50,
+  //         },
+  //         {
+  //           Header: "Visits",
+  //           accessor: "visits",
+  //           width: 60,
+  //         },
+  //         {
+  //           Header: "Status",
+  //           accessor: "status",
+  //         },
+  //         {
+  //           Header: "Profile Progress",
+  //           accessor: "progress",
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   []
+  // );
+
+  // const data = React.useMemo(() => makeData(10), []);
 
   return (
     <Styles>
