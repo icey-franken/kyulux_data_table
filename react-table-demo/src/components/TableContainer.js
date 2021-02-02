@@ -1,3 +1,7 @@
+// filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
+// freeze header pane https://codesandbox.io/s/k9n3y82wov
+
+
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 import styled from "styled-components";
@@ -22,8 +26,8 @@ const Styles = styled.div`
   }
 
   .rows {
-    overflow-y: hidden;
-    overflow-x: hidden;
+    /* overflow-y: hidden;
+    overflow-x: hidden; */
   }
 
   .row {
@@ -38,7 +42,7 @@ const Styles = styled.div`
   }
 
   .header-group {
-		height: 0px;
+		height: 20px;
 		white-space: nowrap;
 		display: inline-block;
     /* margin: 10px!important; */

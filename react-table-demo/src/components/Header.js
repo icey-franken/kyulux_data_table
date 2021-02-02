@@ -4,51 +4,75 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 export default function HeaderComp({ headerProps }) {
   const { setColumnOrder, headerGroups, allColumns } = headerProps;
   const currentColOrder = useRef();
-  const getItemStyle = (snapshot, draggableStyle, column) => {
-    console.log(snapshot, column);
-    const { isDragging, isDropAnimating } = snapshot;
-    const { isResizing } = column;
-    console.log(isResizing);
-    const itemStyle = isResizing
-      ? {background: 'grey'}
-      : {
-          ...draggableStyle,
-          // some basic styles to make the items look a bit nicer
-          userSelect: "none",
+  // ---------------------------------------
+  // const getItemStyle = (snapshot, draggableStyle, column) => {
+  //   console.log(snapshot, column);
+  //   const { isDragging, isDropAnimating } = snapshot;
+  //   const { isResizing } = column;
+  //   console.log(isResizing);
+  // 	const itemStyle =
+  // 	//  isResizing
+  //     // ? {background: 'grey'}
+  // 		// :
+  // 		{
+  //         ...draggableStyle,
+  //         // some basic styles to make the items look a bit nicer
+  //         userSelect: "none",
 
-					// change background colour if dragging
-					//TODO: add a delay to avoid quick switch to green when resizing
-          background: isDragging ? "lightgreen" : "grey",
+  // 				// change background colour if dragging
+  // 				//TODO: add a delay to avoid quick switch to green when resizing
+  //         background: isDragging ? "lightgreen" : "grey",
 
-          ...(!isDragging && { transform: "translate(0,0)" }),
-          ...(isDropAnimating && { transitionDuration: "0.001s" }),
+  //         ...(!isDragging && { transform: "translate(0,0)" }),
+  //         ...(isDropAnimating && { transitionDuration: "0.001s" }),
 
-          // styles we need to apply on draggables
-        };
-    // console.log(itemStyle);
-    return itemStyle;
-  };
+  //         // styles we need to apply on draggables
+  //       };
+  //   // console.log(itemStyle);
+  //   return itemStyle;
+  // };
+
+  const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
+    ...draggableStyle,
+    // some basic styles to make the items look a bit nicer
+    userSelect: "none",
+
+    // change background colour if dragging
+    background: isDragging ? "lightgreen" : "grey",
+
+    ...(!isDragging && { transform: "translate(0,0)" }),
+    ...(isDropAnimating && { transitionDuration: "0.001s" }),
+
+    // styles we need to apply on draggables
+  });
+  // ---------------------------------------
 
   const handleDragStart = (dragStartObj) => {
     // console.log(allColumns[dragStartObj.source.index].isResizing);
     // only change order if column is NOT being resized
-    if (!allColumns[dragStartObj.source.index].isResizing) {
-      currentColOrder.current = allColumns.map((o) => o.id);
-    }
+    // if (!allColumns[dragStartObj.source.index].isResizing) {
+    currentColOrder.current = allColumns.map((o) => o.id);
+    // }
   };
 
   const handleDragUpdate = (dragUpdateObj, b) => {
-    if (!allColumns[dragUpdateObj.source.index].isResizing) {
-      const colOrder = [...currentColOrder.current];
-      const sIndex = dragUpdateObj.source.index;
-      const dIndex =
-        dragUpdateObj.destination && dragUpdateObj.destination.index;
-      if (typeof sIndex === "number" && typeof dIndex === "number") {
-        colOrder.splice(sIndex, 1);
-        colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-        setColumnOrder(colOrder);
-      }
+    console.log(dragUpdateObj, b);
+    // if (!allColumns[dragUpdateObj.source.index].isResizing) {
+    console.log("hits handle drag update");
+    const colOrder = [...currentColOrder.current];
+    console.log(colOrder);
+    const sIndex = dragUpdateObj.source.index;
+    const dIndex = dragUpdateObj.destination && dragUpdateObj.destination.index;
+
+    // console.log(dragUpdateObj);
+
+    if (typeof sIndex === "number" && typeof dIndex === "number") {
+      colOrder.splice(sIndex, 1);
+      colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
+      setColumnOrder(colOrder);
+      console.log("hits");
     }
+    // }
   };
 
   return (
@@ -83,7 +107,8 @@ export default function HeaderComp({ headerProps }) {
                       key={column.id}
                       draggableId={column.id}
                       index={index}
-                      isDragDisabled={!(column.accessor && !column.isResizing)}
+                      // isDragDisabled={!(column.accessor && !column.isResizing)}
+                      isDragDisabled={!column.accessor}
                     >
                       {(provided, snapshot) => {
                         // console.log(column.getHeaderProps());

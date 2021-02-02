@@ -48,8 +48,8 @@ export default function Table({ columns, data }) {
       // className: '-striped -highlight'
     },
     useColumnOrder,
-    useAbsoluteLayout,
-    // useBlockLayout,
+    // useAbsoluteLayout,
+    useBlockLayout,
     useSortBy,
     usePagination,
     useResizeColumns
