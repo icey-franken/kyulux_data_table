@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { useTable, usePagination, useSortBy } from "react-table";
 import SortingModal from "./SortingModal";
-import Pagination from './Pagination';
 
+// import "react-table/react-table.css";
+import withDraggableColumns from "react-table-hoc-draggable-columns";
+import "react-table-hoc-draggable-columns/dist/styles.css";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -65,10 +67,10 @@ function Table({ columns, data }) {
     headerGroups,
     rows,
     prepareRow,
-    state: { pageIndex, pageSize },
     pageOptions,
     pageCount,
     page,
+    state: { pageIndex, pageSize },
     gotoPage,
     previousPage,
     nextPage,
@@ -83,24 +85,10 @@ function Table({ columns, data }) {
   //   setShowModal(false);
   // }, [page]);
   useEffect(() => {
-    console.log("hits rows use effect");
-    console.log(rows);
+    // console.log("hits rows use effect");
+    // console.log(rows);
     setShowModal(false);
   }, [rows]);
-
-  const paginationProps = {
-    pageIndex,
-    pageSize,
-    pageOptions,
-    pageCount,
-    // page,
-    gotoPage,
-    previousPage,
-    nextPage,
-    setPageSize,
-    canPreviousPage,
-    canNextPage,
-  };
   return (
     <div>
       {/* <SortingModal showModal={true} /> */}
@@ -161,14 +149,59 @@ function Table({ columns, data }) {
           })}
         </tbody>
       </table>
+      {/* pagination components */}
       {/* TODO: I want pagination component to remain in the center of the viewport */}
-			<Pagination paginationProps={paginationProps}/>
+      <div className="pagination">
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {"<<"}
+        </button>{" "}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {"<"}
+        </button>{" "}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {">"}
+        </button>{" "}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {">>"}
+        </button>{" "}
+        <span>
+          Page{" "}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{" "}
+        </span>
+        <span>
+          | Go to page:{" "}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={(e) => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0;
+              gotoPage(page);
+            }}
+            style={{ width: "100px" }}
+          />
+        </span>{" "}
+        <select
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+          }}
+        >
+          {[10, 20, 30, 40, 50].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              Show {pageSize}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }
 
 function TableContainer() {
   const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
   // const [headings, setHeadings] = useState([]);
 
   // load initial data.
@@ -185,12 +218,13 @@ function TableContainer() {
           `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
         );
         const { results } = await res.json();
-        console.log(results);
+        // console.log(results);
         // setTableData(results)
         // TODO: find way to stop page resetting to 1 each time results are added
         setTableData((tableData) => [...tableData, ...results]);
       }
       // }
+      setLoading(false);
     }
     getData();
   }, []);
@@ -244,6 +278,7 @@ function TableContainer() {
             accessor: "consumer.gender",
           },
         ],
+        id: "consumer",
       },
       { Header: "Date Created", accessor: "date_created" },
       { Header: "Date Started", accessor: "date_started" },
@@ -256,16 +291,40 @@ function TableContainer() {
           { Header: "Name Brand", accessor: "products.name_brand" },
           { Header: "Role", accessor: "products.role" },
         ],
+        id: "products",
       },
       { Header: "Reactions", accessor: "reactions" },
       { Header: "Report Number", accessor: "report_number" },
     ],
     []
   );
-
+  if (loading) {
+    return null;
+  }
+  // console.log(data);
+  const DragTable = withDraggableColumns(Table);
+  // console.log(DragTable);
   return (
     <Styles>
-      <Table columns={columns} data={data} />
+      <DragTable
+        draggableColumns={{
+          mode: "reorder",
+          draggable: [
+            "date_started",
+            "date_created",
+            "products",
+            "outcomes",
+            "reactions",
+            "report_number",
+            "products.industry_code",
+            "products.industry_name",
+            "consumer",
+					],
+					onDraggedColumnChange: ()=>{console.log('hits on drag enter class name')}
+        }}
+        columns={columns}
+        data={data}
+      />
     </Styles>
   );
 }
