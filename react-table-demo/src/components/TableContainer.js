@@ -3,7 +3,8 @@ import Table from "./Table";
 import styled from "styled-components";
 
 const Styles = styled.div`
-  /* padding-top: 1rem; */
+  padding: 1rem;
+
   * {
     box-sizing: border-box;
     text-align: center;
@@ -36,9 +37,10 @@ const Styles = styled.div`
     }
   }
 
-  .row.header-group {
-		height: 21px;
-		white-space: nowrap
+  .header-group {
+		height: 0px;
+		white-space: nowrap;
+		display: inline-block;
     /* margin: 10px!important; */
   }
 
