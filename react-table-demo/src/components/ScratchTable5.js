@@ -9,7 +9,6 @@ import {
 } from "react-table";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import makeData from "./makeData";
 import Pagination from "./Pagination";
 
 const Styles = styled.div`
@@ -104,8 +103,8 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      defaultColumn,
-      initialState: { pageSize: 5 },
+      // defaultColumn,
+      initialState: { pageSize: 10 },
       autoResetPage: false,
     },
     useColumnOrder,
@@ -171,48 +170,68 @@ function Table({ columns, data }) {
                     ref={droppableProvided.innerRef}
                     className="row header-group"
                   >
-                    {headerGroup.headers.map((column, index) => (
-                      <Draggable
-                        key={column.id}
-                        draggableId={column.id}
-                        index={index}
-                        isDragDisabled={!column.accessor}
-                      >
-                        {(provided, snapshot) => {
-                          // console.log(column.getHeaderProps());
+                    {headerGroup.headers.map((column, index) => {
+                      const props = column.getHeaderProps(
+                        column.getSortByToggleProps()
+                      );
+                      return (
+                        <Draggable
+                          key={column.id}
+                          draggableId={column.id}
+                          index={index}
+                          isDragDisabled={!column.accessor}
+                        >
+                          {(provided, snapshot) => {
+                            // console.log(column.getHeaderProps());
 
-                          // const {
-                          //   style,
-                          //   ...extraProps
-                          // } = column.getHeaderProps();
+                            // const {
+                            //   style,
+                            //   ...extraProps
+                            // } = column.getHeaderProps();
 
-                          // console.log(style, extraProps);
+                            // console.log(style, extraProps);
 
-                          return (
-                            <div
-                              {...column.getHeaderProps()}
-                              className="cell header"
-                            >
+                            return (
                               <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                // {...extraProps}
-                                ref={provided.innerRef}
-                                style={{
-                                  ...getItemStyle(
-                                    snapshot,
-                                    provided.draggableProps.style
-                                  ),
-                                  // ...style
+                                {...props}
+                                // className="cell header"
+                                className={
+                                  "cell header" &&
+                                  (column.isSorted
+                                    ? column.isSortedDesc
+                                      ? "descSort"
+                                      : "ascSort"
+                                    : "")
+                                }
+                                // {...column.getHeaderProps(column.getSortByToggleProps())}
+                                onClick={(e) => {
+                                  // setShowModal(true);
+                                  props.onClick(e);
+                                  // TODO: find a way to remove modal after sorting complete
+                                  // setTimeout(setShowModal(false), 1000);
                                 }}
                               >
-                                {column.render("Header")}
+                                <div
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  // {...extraProps}
+                                  ref={provided.innerRef}
+                                  style={{
+                                    ...getItemStyle(
+                                      snapshot,
+                                      provided.draggableProps.style
+                                    ),
+                                    // ...style
+                                  }}
+                                >
+                                  {column.render("Header")}
+                                </div>
                               </div>
-                            </div>
-                          );
-                        }}
-                      </Draggable>
-                    ))}
+                            );
+                          }}
+                        </Draggable>
+                      );
+                    })}
                     {droppableProvided.placeholder}
                   </div>
                 )}
