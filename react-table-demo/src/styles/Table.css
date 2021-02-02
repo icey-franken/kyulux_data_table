@@ -9,9 +9,9 @@
 	position: fixed;
 	/* position: sticky;  */
   /* position: -webkit-sticky; */
-  bottom: 0;
+  bottom: 0px;
   right: 0;
   /* border: solid 1px blue; */
   width: 100%;
-  background-color: lightgrey;
+  background-color: rgba(211,211,211,0.2);
 }

@@ -20,8 +20,9 @@ const Styles = styled.div`
 
   .table {
     border: 1px solid #000;
-    /* max-width: 700px; */
+		/* max-width: 700px; */
     overflow-x: auto;
+    /* overflow-x: hidden; */
   }
 
   .header {
@@ -29,7 +30,8 @@ const Styles = styled.div`
   }
 
   .rows {
-    overflow-y: auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
   }
 
   .row {
@@ -45,7 +47,7 @@ const Styles = styled.div`
 
   .cell {
     height: 100%;
-    line-height: 31px;
+    /* line-height: 31px; */
     border-right: 1px solid #000;
     /* padding-left: 5px; */
 
@@ -105,7 +107,8 @@ function Table({ columns, data }) {
       data,
       // defaultColumn,
       initialState: { pageSize: 10 },
-      autoResetPage: false,
+			autoResetPage: false,
+			// className: '-striped -highlight'
     },
     useColumnOrder,
     useAbsoluteLayout,
@@ -129,7 +132,9 @@ function Table({ columns, data }) {
     canPreviousPage,
     canNextPage,
   };
-
+  useEffect(() => {
+    console.log("hits", allColumns);
+  }, [allColumns]);
   // Render the UI for your table
   return (
     <>
@@ -205,6 +210,7 @@ function Table({ columns, data }) {
                                 }
                                 // {...column.getHeaderProps(column.getSortByToggleProps())}
                                 onClick={(e) => {
+                                  console.log(column);
                                   // setShowModal(true);
                                   props.onClick(e);
                                   // TODO: find a way to remove modal after sorting complete
@@ -332,27 +338,58 @@ function App() {
             Cell: ({ cell: { value } }) => (
               <span style={{ color: "red" }}>{value}</span>
             ),
+            width: 80,
           },
           {
             Header: "Age Unit",
             accessor: "consumer.age_unit",
+            width: 80,
           },
           {
             Header: "Gender",
             accessor: "consumer.gender",
+            width: 60,
           },
         ],
       },
-      { Header: "Date Created", accessor: "date_created" },
-      { Header: "Date Started", accessor: "date_started" },
-      { Header: "Outcomes", accessor: "outcomes" },
+      {
+        Header: "Date Created",
+        accessor: "date_created",
+        width: 100,
+      },
+      {
+        Header: "Date Started",
+        accessor: "date_started",
+        width: 100,
+      },
+      {
+        Header: "Outcomes",
+        accessor: "outcomes",
+        width: 250,
+      },
       {
         Header: "Products",
         columns: [
-          { Header: "Industry Code", accessor: "products.industry_code" },
-          { Header: "Industry Name", accessor: "products.industry_name" },
-          { Header: "Name Brand", accessor: "products.name_brand" },
-          { Header: "Role", accessor: "products.role" },
+          {
+            Header: "Industry Code",
+            accessor: "products.industry_code",
+            width: 60,
+          },
+          {
+            Header: "Industry Name",
+            accessor: "products.industry_name",
+            width: 200,
+          },
+          {
+            Header: "Name Brand",
+            accessor: "products.name_brand",
+            width: 200,
+          },
+          {
+            Header: "Role",
+            accessor: "products.role",
+            width: 100,
+          },
         ],
       },
       { Header: "Reactions", accessor: "reactions" },
