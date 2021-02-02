@@ -20,7 +20,7 @@ const Styles = styled.div`
 
   .table {
     border: 1px solid #000;
-		/* max-width: 700px; */
+    /* max-width: 700px; */
     overflow-x: auto;
     /* overflow-x: hidden; */
   }
@@ -107,8 +107,8 @@ function Table({ columns, data }) {
       data,
       // defaultColumn,
       initialState: { pageSize: 10 },
-			autoResetPage: false,
-			// className: '-striped -highlight'
+      autoResetPage: false,
+      // className: '-striped -highlight'
     },
     useColumnOrder,
     useAbsoluteLayout,
@@ -117,7 +117,6 @@ function Table({ columns, data }) {
   );
 
   const currentColOrder = React.useRef();
-  console.log(allColumns);
 
   const paginationProps = {
     pageIndex,
@@ -132,9 +131,8 @@ function Table({ columns, data }) {
     canPreviousPage,
     canNextPage,
   };
-  useEffect(() => {
-    console.log("hits", allColumns);
-  }, [allColumns]);
+
+
   // Render the UI for your table
   return (
     <>
@@ -274,7 +272,7 @@ function Table({ columns, data }) {
 function App() {
   const [tableData, setTableData] = useState([]);
   // const [headings, setHeadings] = useState([]);
-
+  // const [loaded, setLoaded] = useState(false);
   // load initial data.
   useEffect(() => {
     async function getData() {
@@ -298,6 +296,41 @@ function App() {
     }
     getData();
   }, []);
+
+  const getColumnWidth = (rows, accessor, headerText) => {
+    // pass in page, NOT rows - rows too much data and no benefit
+    const maxWidth = 400;
+    const magicSpacing = 10;
+    console.log(rows);
+    const rowLenArr = rows.map((row) => {
+      console.log(`${row[accessor]}` || "");
+      return (`${row[accessor]}` || "").length;
+    });
+    const potentialLenArr = [...rowLenArr, headerText.length];
+    const cellLength = Math.max(...potentialLenArr);
+    const result = Math.min(maxWidth, cellLength * magicSpacing);
+    console.log(
+      "accessor:",
+      accessor,
+      "headerText.length: ",
+      headerText.length,
+      "cellLength: ",
+      cellLength,
+      "result: ",
+      result
+    );
+    return result;
+  };
+
+  // const getColumnWidthOriginal = (rows, accessor, headerText) => {
+  //   const maxWidth = 400;
+  //   const magicSpacing = 10;
+  //   const cellLength = Math.max(
+  //     ...rows.map((row) => (`${row[accessor]}` || "").length),
+  //     headerText.length
+  //   );
+  //   return Math.min(maxWidth, cellLength * magicSpacing);
+  // };
 
   const data = useMemo(() => {
     const flatData = [];
@@ -338,7 +371,7 @@ function App() {
             Cell: ({ cell: { value } }) => (
               <span style={{ color: "red" }}>{value}</span>
             ),
-            width: 80,
+            width: 60,
           },
           {
             Header: "Age Unit",
@@ -365,7 +398,8 @@ function App() {
       {
         Header: "Outcomes",
         accessor: "outcomes",
-        width: 250,
+        // width: 200,
+        // width: getColumnWidth(data, "outcomes", "Outcomes"),
       },
       {
         Header: "Products",
@@ -373,17 +407,21 @@ function App() {
           {
             Header: "Industry Code",
             accessor: "products.industry_code",
-            width: 60,
+            width: 100,
           },
           {
             Header: "Industry Name",
             accessor: "products.industry_name",
-            width: 200,
+            // width: getColumnWidth(
+            //   data,
+            //   "products.industry_name",
+            //   "Industry Name"
+            // ),
           },
           {
             Header: "Name Brand",
             accessor: "products.name_brand",
-            width: 200,
+            // width: getColumnWidth(data, "products.name_brand", "Name Brand"),
           },
           {
             Header: "Role",
@@ -392,8 +430,16 @@ function App() {
           },
         ],
       },
-      { Header: "Reactions", accessor: "reactions" },
-      { Header: "Report Number", accessor: "report_number" },
+      {
+        Header: "Reactions",
+        accessor: "reactions",
+        // width: getColumnWidth(data, "reactions", "Reactions"),
+      },
+      {
+        Header: "Report Number",
+        accessor: "report_number",
+        width: 100,
+      },
     ],
     []
   );
