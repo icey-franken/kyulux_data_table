@@ -81,6 +81,7 @@ export default function Table({ columns, data }) {
   };
 
   // Render the UI for your table
+  console.log(getTableProps());
   return (
     <>
       <div {...getTableProps()} className="table">
@@ -129,18 +130,18 @@ export default function Table({ columns, data }) {
                             //   ...extraProps
                             // } = column.getHeaderProps();
                             // console.log(style, extraProps);
-														console.log(props)
+                            // console.log(props)
                             return (
                               <div
                                 {...props}
-                                className={
-                                  `cell header
-                                  ${(column.isSorted
-                                    ? column.isSortedDesc
-                                      ? "descSort"
-                                      : "ascSort"
-                                    : "")}`
-                                }
+                                className={`cell header
+                                  ${
+                                    column.isSorted
+                                      ? column.isSortedDesc
+                                        ? "descSort"
+                                        : "ascSort"
+                                      : ""
+                                  }`}
                                 // {...column.getHeaderProps(column.getSortByToggleProps())}
                                 onClick={(e) => {
                                   console.log(column);
@@ -180,20 +181,32 @@ export default function Table({ columns, data }) {
         </div>
 
         <div className="rows" {...getTableBodyProps()}>
-          {page.map(
-            (row, i) =>
-              prepareRow(row) || (
-                <div {...row.getRowProps()} className="row body" key={i}>
-                  {row.cells.map((cell, idx) => {
-                    return (
-                      <div {...cell.getCellProps()} className="cell" key={idx}>
-                        {cell.render("Cell")}
-                      </div>
-                    );
-                  })}
-                </div>
-              )
-          )}
+          {page.map((row, i) => {
+            prepareRow(row);
+            const props = row.getRowProps();
+            return (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  backgroundColor: `${
+                    i % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
+                  }`,
+								}}
+								// onHover={()=>}
+                className="row body"
+                key={i}
+              >
+                {row.cells.map((cell, idx) => {
+                  return (
+                    <div {...cell.getCellProps()} className="cell" key={idx}>
+                      {cell.render("Cell")}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
       </div>
       {/* <pre>
