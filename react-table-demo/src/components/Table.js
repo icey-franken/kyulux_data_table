@@ -6,6 +6,8 @@ import {
   useColumnOrder,
   usePagination,
   useSortBy,
+  useResizeColumns,
+  useBlockLayout,
 } from "react-table";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
@@ -19,8 +21,8 @@ const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
   // change background colour if dragging
   background: isDragging ? "lightgreen" : "grey",
 
-  ...(!isDragging && { transform: "translate(0,0)" }),
-  ...(isDropAnimating && { transitionDuration: "0.001s" }),
+  // ...(!isDragging && { transform: "translate(0,0)" }),
+  // ...(isDropAnimating && { transitionDuration: "0.001s" }),
 
   // styles we need to apply on draggables
 });
@@ -59,9 +61,11 @@ export default function Table({ columns, data }) {
       // className: '-striped -highlight'
     },
     useColumnOrder,
-    useAbsoluteLayout,
+    // useAbsoluteLayout,
+    useBlockLayout,
     useSortBy,
-    usePagination
+    usePagination,
+    useResizeColumns
   );
 
   const currentColOrder = React.useRef();
@@ -131,6 +135,8 @@ export default function Table({ columns, data }) {
                             // } = column.getHeaderProps();
                             // console.log(style, extraProps);
                             // console.log(props)
+                            console.log(column.getHeaderProps());
+                            console.log(column.getResizerProps());
                             return (
                               <div
                                 {...props}
@@ -143,17 +149,15 @@ export default function Table({ columns, data }) {
                                       : ""
                                   }`}
                                 // {...column.getHeaderProps(column.getSortByToggleProps())}
-                                onClick={(e) => {
-                                  console.log(column);
-                                  // setShowModal(true);
-                                  props.onClick(e);
-                                  // TODO: find a way to remove modal after sorting complete
-                                  // setTimeout(setShowModal(false), 1000);
-                                }}
+                                // onClick={(e) => {
+                                //   console.log(column);
+                                //   // setShowModal(true);
+                                //   props.onClick(e);
+                                // TODO: find a way to remove modal after sorting complete
+                                // setTimeout(setShowModal(false), 1000);
+                                // }}
                               >
                                 <div
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
                                   // {...extraProps}
                                   ref={provided.innerRef}
                                   style={{
@@ -163,8 +167,16 @@ export default function Table({ columns, data }) {
                                     ),
                                     // ...style
                                   }}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
                                 >
                                   {column.render("Header")}
+                                  <div
+                                    {...column.getResizerProps()}
+                                    className={`resizer ${
+                                      column.isResizing ? "isResizing" : ""
+                                    }`}
+                                  />
                                 </div>
                               </div>
                             );
@@ -192,8 +204,8 @@ export default function Table({ columns, data }) {
                   backgroundColor: `${
                     i % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
                   }`,
-								}}
-								// onHover={()=>}
+                }}
+                // onHover={()=>}
                 className="row body"
                 key={i}
               >

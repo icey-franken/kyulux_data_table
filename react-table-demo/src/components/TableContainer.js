@@ -3,21 +3,21 @@ import Table from "./Table";
 import styled from "styled-components";
 
 const Styles = styled.div`
-  padding: 1rem;
-
+  /* padding-top: 1rem; */
   * {
     box-sizing: border-box;
+    text-align: center;
   }
 
   .table {
-    border: 1px solid #000;
+    /* border: 1px solid #000; */
     /* max-width: 700px; */
     overflow-x: auto;
     /* overflow-x: hidden; */
   }
 
   .header {
-    font-weight: bold;
+    font-weight: 600;
   }
 
   .rows {
@@ -26,7 +26,7 @@ const Styles = styled.div`
   }
 
   .row {
-    border-bottom: 1px solid #000;
+    /* border-bottom: 1px solid #000; */
     height: 200px;
 
     &.body {
@@ -34,6 +34,15 @@ const Styles = styled.div`
         border: 0;
       }
     }
+  }
+
+  .row.header-group {
+    height: 21px;
+    /* margin: 10px!important; */
+  }
+
+  .row.body:hover {
+    background-color: rgb(250, 100, 100) !important;
   }
 
   .cell {
@@ -44,6 +53,24 @@ const Styles = styled.div`
 
     :last-child {
       border: 0;
+    }
+
+    .resizer {
+      display: inline-block;
+      background: blue;
+      width: 10px;
+      height: 100%;
+      position: absolute;
+      right: 0;
+      top: 0;
+      transform: translateX(50%);
+      z-index: 1;
+      ${"" /* prevents from scrolling while dragging on touch devices */}
+      touch-action:none;
+
+      &.isResizing {
+        background: red;
+      }
     }
   }
 `;
@@ -136,6 +163,11 @@ export default function TableContainer() {
   const columns = useMemo(
     () => [
       {
+        Header: "Report Number",
+        accessor: "report_number",
+        width: 126,
+      },
+      {
         Header: "Consumer",
         columns: [
           {
@@ -144,7 +176,7 @@ export default function TableContainer() {
             Cell: ({ cell: { value } }) => (
               <span style={{ color: "red" }}>{value}</span>
             ),
-            width: 60,
+            width: 40,
           },
           {
             Header: "Age Unit",
@@ -154,19 +186,19 @@ export default function TableContainer() {
           {
             Header: "Gender",
             accessor: "consumer.gender",
-            width: 60,
+            width: 66,
           },
         ],
       },
       {
         Header: "Date Created",
         accessor: "date_created",
-        width: 100,
+        width: 110,
       },
       {
         Header: "Date Started",
         accessor: "date_started",
-        width: 100,
+        width: 104,
       },
       {
         Header: "Outcomes",
@@ -180,7 +212,7 @@ export default function TableContainer() {
           {
             Header: "Industry Code",
             accessor: "products.industry_code",
-            width: 100,
+            width: 114,
           },
           {
             Header: "Industry Name",
@@ -190,11 +222,13 @@ export default function TableContainer() {
             //   "products.industry_name",
             //   "Industry Name"
             // ),
+            width: 200,
           },
           {
             Header: "Name Brand",
             accessor: "products.name_brand",
             // width: getColumnWidth(data, "products.name_brand", "Name Brand"),
+            width: 200,
           },
           {
             Header: "Role",
@@ -207,11 +241,6 @@ export default function TableContainer() {
         Header: "Reactions",
         accessor: "reactions",
         // width: getColumnWidth(data, "reactions", "Reactions"),
-      },
-      {
-        Header: "Report Number",
-        accessor: "report_number",
-        width: 100,
       },
     ],
     []
