@@ -1,6 +1,7 @@
 // filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
 // freeze header pane https://codesandbox.io/s/k9n3y82wov
 
+// here we set up table structure, data, and styling
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 import styled from "styled-components";
@@ -42,6 +43,7 @@ const Styles = styled.div`
 
   .header-group {
     height: 40px;
+    /* 40px; */
     background-color: lightgrey;
     white-space: nowrap;
     display: inline-block;
@@ -49,7 +51,12 @@ const Styles = styled.div`
     line-height: 30px;
     /* border: 1px solid green; */
     /* margin: 10px!important; */
-  }
+	}
+
+	.header-group-search {
+		height: 80px!important;
+	}
+
   .header.cell {
     /* border: 1px solid green; */
     height: 100%;
@@ -94,16 +101,28 @@ const Styles = styled.div`
     transition: width 0.5s;
 
     &.isResizing {
-			background: rgba(173, 216, 230, 1.0);
-
+      background: rgba(173, 216, 230, 1);
     }
     &:hover {
-			width: 10px;
-			background: rgba(173, 216, 230, 1.0);
+      width: 10px;
+      background: rgba(173, 216, 230, 1);
 
       /* transform: translateX(0); */
     }
   }
+
+  /* !!! */
+  .filter {
+    width: 100%;
+    /* height: 100%; */
+    /* border: 4px solid purple; */
+    box-sizing: border-box;
+		z-index: 10;
+		position: absolute;
+		bottom: 0px;
+		/* border: 1px solid blue; */
+  }
+  /* -!!! */
 `;
 
 export default function TableContainer() {
@@ -197,6 +216,7 @@ export default function TableContainer() {
         Header: "Report Number",
         accessor: "report_number",
         width: 126,
+        filter: "text",
       },
       {
         Header: "Consumer",
@@ -208,16 +228,19 @@ export default function TableContainer() {
               <span style={{ color: "red" }}>{value}</span>
             ),
             width: 40,
+            filter: "text",
           },
           {
             Header: "Age Unit",
             accessor: "consumer.age_unit",
             width: 80,
+            filter: "text",
           },
           {
             Header: "Gender",
             accessor: "consumer.gender",
             width: 66,
+            filter: "text",
           },
         ],
       },
@@ -225,17 +248,20 @@ export default function TableContainer() {
         Header: "Date Created",
         accessor: "date_created",
         width: 110,
+        filter: "text",
       },
       {
         Header: "Date Started",
         accessor: "date_started",
         width: 104,
+        filter: "text",
       },
       {
         Header: "Outcomes",
         accessor: "outcomes",
         // width: 200,
         // width: getColumnWidth(data, "outcomes", "Outcomes"),
+        filter: "text",
       },
       {
         Header: "Products",
@@ -244,6 +270,7 @@ export default function TableContainer() {
             Header: "Industry Code",
             accessor: "products.industry_code",
             width: 114,
+            filter: "text",
           },
           {
             Header: "Industry Name",
@@ -254,17 +281,20 @@ export default function TableContainer() {
             //   "Industry Name"
             // ),
             width: 200,
+            filter: "text",
           },
           {
             Header: "Name Brand",
             accessor: "products.name_brand",
             // width: getColumnWidth(data, "products.name_brand", "Name Brand"),
             width: 200,
+            filter: "text",
           },
           {
             Header: "Role",
             accessor: "products.role",
             width: 100,
+            filter: "text",
           },
         ],
       },
@@ -272,6 +302,7 @@ export default function TableContainer() {
         Header: "Reactions",
         accessor: "reactions",
         // width: getColumnWidth(data, "reactions", "Reactions"),
+        filter: "text",
       },
     ],
     []
