@@ -17,20 +17,20 @@ import Body from "./Body";
 import Pagination from "./Pagination";
 
 // !!! can live elsewhere
-const DefaultColumnFilter = ({column}) => {
-	console.log(column)
-	const { filterValue, preFilteredRows, setFilter } = column
+const DefaultColumnFilter = ({ column }) => {
+  // console.log(column);
+  const { filterValue, preFilteredRows, setFilter } = column;
   const count = preFilteredRows.length;
 
-	return (
+  return (
     <input
-		size={column.width}
+      size={column.width}
       value={filterValue || ""}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
-			placeholder={`Search ${count} records...`}
-			style={{textAlign:"left"}}
+      placeholder={`Search ${count} records...`}
+      style={{ textAlign: "left" }}
     />
   );
 };
@@ -82,7 +82,7 @@ export default function Table({ columns, data }) {
           return rowValue !== undefined
             ? String(rowValue)
                 .toLowerCase()
-                .startsWith(String(filterValue).toLowerCase())
+                .includes(String(filterValue).toLowerCase())
             : true;
         });
       },
@@ -100,7 +100,7 @@ export default function Table({ columns, data }) {
     allColumns,
     setColumnOrder,
     // state,
-    state: { pageIndex, pageSize },
+    state,
     pageOptions,
     pageCount,
     page,
@@ -140,11 +140,20 @@ export default function Table({ columns, data }) {
     usePagination
   );
 
-  const headerProps = { setColumnOrder, headerGroups, allColumns };
+  const headerProps = {
+    setColumnOrder,
+    headerGroups,
+    allColumns,
+    visibleColumns,
+    preGlobalFilteredRows,
+    globalFilter: state.globalFilter,
+    setGlobalFilter,
+    GlobalFilter,
+  };
   const bodyProps = { getTableBodyProps, prepareRow, page };
   const paginationProps = {
-    pageIndex,
-    pageSize,
+    pageIndex: state.pageIndex,
+    pageSize: state.pageSize,
     pageOptions,
     pageCount,
     // page,

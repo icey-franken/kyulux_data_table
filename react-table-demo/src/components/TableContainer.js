@@ -51,11 +51,11 @@ const Styles = styled.div`
     line-height: 30px;
     /* border: 1px solid green; */
     /* margin: 10px!important; */
-	}
+  }
 
-	.header-group-search {
-		height: 80px!important;
-	}
+  .header-group-search {
+    height: 80px !important;
+  }
 
   .header.cell {
     /* border: 1px solid green; */
@@ -113,64 +113,70 @@ const Styles = styled.div`
 
   /* !!! */
   .filter {
-		/* width: 100%; */
-		/* width: 100px; */
-		cursor: default;
+    /* width: 100%; */
+    /* width: 100px; */
+    cursor: default;
     /* height: 100%; */
     /* border: 4px solid purple; */
     box-sizing: border-box;
-		z-index: 10;
-		position: absolute;
-		bottom: 0px;
-		/* border: 1px solid blue; */
+    z-index: 10;
+    position: absolute;
+    bottom: 0px;
+    /* border: 1px solid blue; */
   }
   /* -!!! */
 `;
 
 export default function TableContainer() {
   const [tableData, setTableData] = useState([]);
-  // load initial data.
+	// load initial data.
+
   useEffect(() => {
     async function getData() {
-      // we can only fetch 1000 entries at a time - there are exactly 26,000 entries
-      // TODO: change skip to <= 25000 and change if statement
-      // 	set to 1000 for now so we don't hammer db with requests
-      // 	if statement to eliminate regrabbing same data on page refresh
-      if (tableData.length < 1) {
-        for (let skip = 0; skip <= 1000; skip += 1000) {
-          const res = await fetch(
-            `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
-          );
-          const { results } = await res.json();
+			let skip = 0;
+			// skip<3000 because too slow otherwise... this is a problem
+      while (skip<3000) {
+        console.log("skip and table data length: ", skip, tableData.length);
+        const res = await fetch(
+          `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
+        );
+        const { results } = await res.json();
+        if (results) {
           setTableData((tableData) => [...tableData, ...results]);
+        } else {
+          break;
         }
+        skip += 1000;
       }
     }
-    getData();
+    if (tableData.length === 0) {
+      getData();
+    }
+    // eslint-disable-next-line
   }, []);
 
   const getColumnWidth = (rows, accessor, headerText) => {
     // pass in page, NOT rows - rows too much data and no benefit
     const maxWidth = 400;
     const magicSpacing = 10;
-    console.log(rows);
+    // console.log(rows);
     const rowLenArr = rows.map((row) => {
-      console.log(`${row[accessor]}` || "");
+      // console.log(`${row[accessor]}` || "");
       return (`${row[accessor]}` || "").length;
     });
     const potentialLenArr = [...rowLenArr, headerText.length];
     const cellLength = Math.max(...potentialLenArr);
     const result = Math.min(maxWidth, cellLength * magicSpacing);
-    console.log(
-      "accessor:",
-      accessor,
-      "headerText.length: ",
-      headerText.length,
-      "cellLength: ",
-      cellLength,
-      "result: ",
-      result
-    );
+    // console.log(
+    //   "accessor:",
+    //   accessor,
+    //   "headerText.length: ",
+    //   headerText.length,
+    //   "cellLength: ",
+    //   cellLength,
+    //   "result: ",
+    //   result
+    // );
     return result;
   };
 

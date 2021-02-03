@@ -2,7 +2,16 @@ import React, { useRef, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export default function HeaderComp({ headerProps }) {
-  const { setColumnOrder, headerGroups, allColumns } = headerProps;
+  const {
+    setColumnOrder,
+    headerGroups,
+    allColumns,
+    visibleColumns,
+    preGlobalFilteredRows,
+    globalFilter,
+    setGlobalFilter,
+    GlobalFilter,
+  } = headerProps;
   const currentColOrder = useRef();
   const [resizing, setResizing] = useState(false);
   // useEffect(() => {
@@ -95,6 +104,20 @@ export default function HeaderComp({ headerProps }) {
         }}
       ></div> */}
       <div>
+        <div>
+          <div
+            colSpan={visibleColumns.length}
+            style={{
+              textAlign: "left",
+            }}
+          >
+            <GlobalFilter
+              preGlobalFilteredRows={preGlobalFilteredRows}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          </div>
+        </div>
         {headerGroups.map((headerGroup, hg_idx) => (
           <DragDropContext
             key={hg_idx}
@@ -171,9 +194,9 @@ export default function HeaderComp({ headerProps }) {
                                   ...props.style,
                                   // height: (hg_idx === 1 ? '300px': 'inherit')
                                 }}
-																// {...dragProps}
-																// spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
-																onClick={null}
+                                // {...dragProps}
+                                // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
+                                onClick={null}
                               >
                                 <div
                                   className={`sortable ${
@@ -186,7 +209,10 @@ export default function HeaderComp({ headerProps }) {
                                   onClick={(e) => {
                                     // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
                                     // resizing conditional and target id check prevents resorting while resizing
-                                    console.log('e.target from click', e.target);
+                                    console.log(
+                                      "e.target from click",
+                                      e.target
+                                    );
                                     if (
                                       typeof props.onClick === "function" &&
                                       !resizing &&
@@ -251,6 +277,7 @@ export default function HeaderComp({ headerProps }) {
                       </Draggable>
                     );
                   })}
+
                   {droppableProvided.placeholder}
                 </div>
               )}
