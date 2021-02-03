@@ -26,7 +26,7 @@ export default function HeaderComp({ headerProps }) {
   const wiggleScreen = () => {
     window.scrollTo({ top: 100, behavior: "auto" });
     window.scrollTo({ top: 0, behavior: "auto" });
-    // console.log('screen wiggled')
+    console.log("screen wiggled");
   };
 
   const getItemStyle = (snapshot, draggableStyle, column) => {
@@ -77,13 +77,13 @@ export default function HeaderComp({ headerProps }) {
           //TODO: add a delay to avoid quick switch to green when resizing
           background: isDragging ? "grey" : "initial",
           // ...(!isDragging && { transform: "translate(0,0)" }),
-          ...(isDropAnimating && { transitionDuration: "0.001s" }),
           // styles we need to apply on draggables
 
-          pointerEvents: "auto",
-          touchAction: "none",
           // suggested to move draggable style to the end so last applied
           ...draggableStyle,
+          ...(isDropAnimating && { transitionDuration: "0.001s" }),
+          pointerEvents: "auto",
+          touchAction: "none",
           transform: null,
           ...posStyle,
         };
@@ -131,10 +131,12 @@ export default function HeaderComp({ headerProps }) {
         colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
         setColumnOrder(colOrder);
       }
+      console.log("----------------colOrder", colOrder);
     }
   };
   const handleDragEnd = (e) => {
     console.log("hits handle drag end in draggable - e: ", e);
+    wiggleScreen();
   };
 
   return (
@@ -156,7 +158,7 @@ export default function HeaderComp({ headerProps }) {
           setResizing(false);
         }}
       ></div> */}
-      <div>
+      <div onMouseUp={handleDragEnd}>
         <div>
           <div
             colSpan={visibleColumns.length}
