@@ -4,128 +4,128 @@
 // here we set up table structure, data, and styling
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
-import styled from "styled-components";
+// import styled from "styled-components";
 
-const Styles = styled.div`
-  padding: 1rem;
+// const Styles = styled.div`
+//   padding: 1rem;
 
-  * {
-    box-sizing: border-box;
-    text-align: center;
-  }
+//   * {
+//     box-sizing: border-box;
+//     text-align: center;
+//   }
 
-  .table {
-    /* border: 1px solid #000; */
-    /* max-width: 700px; */
-    overflow-x: auto;
-    /* overflow-x: hidden; */
-  }
+//   .table {
+//     /* border: 1px solid #000; */
+//     /* max-width: 700px; */
+//     overflow-x: auto;
+//     /* overflow-x: hidden; */
+//   }
 
-  .header {
-    font-weight: 600;
-  }
+//   .header {
+//     font-weight: 600;
+//   }
 
-  .rows {
-    /* overflow-y: hidden;
-    overflow-x: hidden; */
-  }
+//   .rows {
+//     /* overflow-y: hidden;
+//     overflow-x: hidden; */
+//   }
 
-  .row {
-    /* border-bottom: 1px solid #000; */
-    height: 200px;
+//   .row {
+//     /* border-bottom: 1px solid #000; */
+//     height: 200px;
 
-    &.body {
-      :last-child {
-        border: 0;
-      }
-    }
-  }
+//     &.body {
+//       :last-child {
+//         border: 0;
+//       }
+//     }
+//   }
 
-  .header-group {
-    height: 40px;
-    /* 40px; */
-    background-color: lightgrey;
-    white-space: nowrap;
-    display: inline-block;
-    box-sizing: border-box;
-    line-height: 30px;
-    /* border: 1px solid green; */
-    /* margin: 10px!important; */
-  }
+//   .header-group {
+//     height: 40px;
+//     /* 40px; */
+//     background-color: lightgrey;
+//     white-space: nowrap;
+//     display: inline-block;
+//     box-sizing: border-box;
+//     line-height: 30px;
+//     /* border: 1px solid green; */
+//     /* margin: 10px!important; */
+//   }
 
-  .header-group-search {
-    height: 80px !important;
-  }
+//   .header-group-search {
+//     height: 80px !important;
+//   }
 
-  .header.cell {
-    /* border: 1px solid green; */
-    height: 100%;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    overflow: hidden;
-  }
-  .header.cell:focus {
-    outline: none;
-  }
-  .current-dropzone {
-    opacity: 0.6;
-  }
-  .row.body:hover {
-    background-color: rgb(250, 100, 100) !important;
-  }
+//   .header.cell {
+//     /* border: 1px solid green; */
+//     height: 100%;
+//     border-top: 5px solid transparent;
+//     border-bottom: 5px solid transparent;
+//     overflow: hidden;
+//   }
+//   .header.cell:focus {
+//     outline: none;
+//   }
+//   .current-dropzone {
+//     opacity: 0.6;
+//   }
+//   .row.body:hover {
+//     background-color: rgb(250, 100, 100) !important;
+//   }
 
-  .cell {
-    height: 100%;
-    /* line-height: 31px; */
-    border-right: 1px solid #000;
-    /* padding-left: 5px; */
-    overflow-x: hidden;
+//   .cell {
+//     height: 100%;
+//     /* line-height: 31px; */
+//     border-right: 1px solid #000;
+//     /* padding-left: 5px; */
+//     overflow-x: hidden;
 
-    :last-child {
-      border-right: 0;
-    }
-  }
-  .resizer {
-    display: inline-block;
-    background: rgba(173, 216, 230, 0.7);
-    width: 5px;
-    height: 40px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    /* transform: translateX(5px); */
-    z-index: 1;
-    overflow-x: visible !important;
-    ${"" /* prevents from scrolling while dragging on touch devices */}
-    touch-action:none;
-    transition: width 0.5s;
+//     :last-child {
+//       border-right: 0;
+//     }
+//   }
+//   .resizer {
+//     display: inline-block;
+//     background: rgba(173, 216, 230, 0.7);
+//     width: 5px;
+//     height: 40px;
+//     position: absolute;
+//     right: 0;
+//     top: 0;
+//     /* transform: translateX(5px); */
+//     z-index: 1;
+//     overflow-x: visible !important;
+//     ${"" /* prevents from scrolling while dragging on touch devices */}
+//     touch-action:none;
+//     transition: width 0.5s;
 
-    &.isResizing {
-      background: rgba(173, 216, 230, 1);
-    }
-    &:hover {
-      width: 10px;
-      background: rgba(173, 216, 230, 1);
+//     &.isResizing {
+//       background: rgba(173, 216, 230, 1);
+//     }
+//     &:hover {
+//       width: 10px;
+//       background: rgba(173, 216, 230, 1);
 
-      /* transform: translateX(0); */
-    }
-  }
+//       /* transform: translateX(0); */
+//     }
+//   }
 
-  /* !!! */
-  .filter {
-    /* width: 100%; */
-    /* width: 100px; */
-    cursor: default;
-    /* height: 100%; */
-    /* border: 4px solid purple; */
-    box-sizing: border-box;
-    z-index: 10;
-    position: absolute;
-    bottom: 0px;
-    /* border: 1px solid blue; */
-  }
-  /* -!!! */
-`;
+//   /* !!! */
+//   .filter {
+//     /* width: 100%; */
+//     /* width: 100px; */
+//     cursor: default;
+//     /* height: 100%; */
+//     /* border: 4px solid purple; */
+//     box-sizing: border-box;
+//     z-index: 10;
+//     position: absolute;
+//     bottom: 0px;
+//     /* border: 1px solid blue; */
+//   }
+//   /* -!!! */
+// `;
 
 export default function TableContainer() {
   const [tableData, setTableData] = useState([]);
@@ -317,8 +317,8 @@ export default function TableContainer() {
   );
 
   return (
-    <Styles>
+    // <Styles>
       <Table columns={columns} data={data} />
-    </Styles>
+    // </Styles>
   );
 }
