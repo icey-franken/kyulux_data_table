@@ -94,11 +94,12 @@ padding: 1rem;
   border-right: 1px solid #000;
   /* padding-left: 5px; */
   overflow-x: hidden;
-
-  :last-child {
-    border-right: 0;
-  }
 }
+
+.cell:last-child {
+  border-right: 0;
+}
+
 .resizer {
   display: inline-block;
   background: rgba(173, 216, 230, 0.7);

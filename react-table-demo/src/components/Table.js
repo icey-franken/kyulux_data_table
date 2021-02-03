@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
-import styled from "styled-components";
 import {
   useTable,
-  useAbsoluteLayout,
   useColumnOrder,
   usePagination,
   useResizeColumns,
@@ -11,66 +9,18 @@ import {
   useGlobalFilter,
   useSortBy,
 } from "react-table";
+import { DefaultColumnFilter, GlobalFilter } from "./Filters";
 
 import Header from "./Header";
 import Body from "./Body";
 import Pagination from "./Pagination";
 
-// !!! can live elsewhere
-const DefaultColumnFilter = ({ column }) => {
-  // console.log(column);
-  const { filterValue, preFilteredRows, setFilter } = column;
-  const count = preFilteredRows.length;
-
-  return (
-    <input
-      size={column.width}
-      value={filterValue || ""}
-      onChange={(e) => {
-        setFilter(e.target.value || undefined);
-      }}
-      placeholder={`Search ${count} records...`}
-      style={{ textAlign: "left" }}
-    />
-  );
-};
-
-const GlobalFilter = ({
-  preGlobalFilteredRows,
-  globalFilter,
-  setGlobalFilter,
-}) => {
-  const count = preGlobalFilteredRows && preGlobalFilteredRows.length;
-
-  return (
-    <span>
-      Search:{" "}
-      <input
-        value={globalFilter || ""}
-        onChange={(e) => {
-          setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-        }}
-        placeholder={`${count} records...`}
-        style={{
-          border: "0",
-        }}
-      />
-    </span>
-  );
-};
-// -!!!
-
 // here we create the table
 export default function Table({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
 
-  // const defaultColumn = useMemo(() => ({ width: 200 }), []);
-  // !!! should live here
-  const defaultColumn = React.useMemo(
-    () => ({
-      Filter: DefaultColumnFilter,
-      width: 200,
-    }),
+  const defaultColumn = useMemo(
+    () => ({ Filter: DefaultColumnFilter, width: 200 }),
     []
   );
 
@@ -89,17 +39,15 @@ export default function Table({ columns, data }) {
     }),
     []
   );
-  // -!!!
 
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    // rows, // use page instead - less data to load
     prepareRow,
     allColumns,
     setColumnOrder,
-    // state,
     state,
     pageOptions,
     pageCount,
@@ -110,32 +58,23 @@ export default function Table({ columns, data }) {
     setPageSize,
     canPreviousPage,
     canNextPage,
-    // !!!
     visibleColumns,
     preGlobalFilteredRows,
     setGlobalFilter,
-    // -!!!
   } = useTable(
     {
       columns,
       data,
-      // defaultColumn,
       initialState: { pageSize: 10 },
       autoResetPage: false,
-      // className: '-striped -highlight'
-      // !!!
       defaultColumn,
       filterTypes,
-      // -!!!
     },
     useColumnOrder,
-    // useAbsoluteLayout,
     useBlockLayout,
     useResizeColumns,
-    // !!!
     useFilters,
     useGlobalFilter,
-    // -!!!
     useSortBy,
     usePagination
   );
@@ -148,7 +87,6 @@ export default function Table({ columns, data }) {
     preGlobalFilteredRows,
     globalFilter: state.globalFilter,
     setGlobalFilter,
-    GlobalFilter,
   };
   const bodyProps = { getTableBodyProps, prepareRow, page };
   const paginationProps = {
@@ -156,7 +94,6 @@ export default function Table({ columns, data }) {
     pageSize: state.pageSize,
     pageOptions,
     pageCount,
-    // page,
     gotoPage,
     previousPage,
     nextPage,
@@ -165,7 +102,6 @@ export default function Table({ columns, data }) {
     canNextPage,
   };
 
-  // Render the UI for your table
   return (
     <>
       <div {...getTableProps()} className="table">

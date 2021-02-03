@@ -6,7 +6,6 @@ export default function Pagination({ paginationProps }) {
 		pageSize,
     pageOptions,
 		pageCount,
-		// page,
 		gotoPage,
 		previousPage,
 		nextPage,

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { GlobalFilter } from "./Filters";
 
 export default function HeaderComp({ headerProps }) {
   const {
@@ -10,7 +11,6 @@ export default function HeaderComp({ headerProps }) {
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
-    GlobalFilter,
   } = headerProps;
   const currentColOrder = useRef();
   const [resizing, setResizing] = useState(false);
