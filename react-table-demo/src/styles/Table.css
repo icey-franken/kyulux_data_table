@@ -118,7 +118,7 @@
   z-index: 1;
   overflow-x: visible !important;
   /* ${"" prevents from scrolling while dragging on touch devices} */
-  touch-action: none;
+  /* touch-action: none; */
   transition: width 0.5s;
 }
 .isResizing {
