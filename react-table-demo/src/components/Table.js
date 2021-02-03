@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   useTable,
   useColumnOrder,
@@ -9,21 +9,19 @@ import {
   useGlobalFilter,
   useSortBy,
 } from "react-table";
-import { DefaultColumnFilter, GlobalFilter } from "./Filters";
-
+import { DefaultColumnFilter } from "./Filters";
 import Header from "./Header";
 import Body from "./Body";
 import Pagination from "./Pagination";
 
 // here we create the table
 export default function Table({ columns, data }) {
-  // Use the state and functions returned from useTable to build your UI
-
   const defaultColumn = useMemo(
     () => ({ Filter: DefaultColumnFilter, width: 200 }),
     []
   );
 
+  // define our text filter
   const filterTypes = useMemo(
     () => ({
       text: (rows, id, filterValue) => {
@@ -40,6 +38,7 @@ export default function Table({ columns, data }) {
     []
   );
 
+  // use props/functions returned from useTable to build UI
   const {
     getTableProps,
     getTableBodyProps,
@@ -79,6 +78,7 @@ export default function Table({ columns, data }) {
     usePagination
   );
 
+  // prepare props for main components - consider implementing table context
   const headerProps = {
     setColumnOrder,
     headerGroups,
@@ -88,7 +88,9 @@ export default function Table({ columns, data }) {
     globalFilter: state.globalFilter,
     setGlobalFilter,
   };
+
   const bodyProps = { getTableBodyProps, prepareRow, page };
+
   const paginationProps = {
     pageIndex: state.pageIndex,
     pageSize: state.pageSize,

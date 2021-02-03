@@ -1,20 +1,19 @@
-// filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
-// freeze header pane https://codesandbox.io/s/k9n3y82wov
-
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 
-// here we set up table structure, data, and styling
+// filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
+// freeze header pane https://codesandbox.io/s/k9n3y82wov
+
+// here we set up table data and columns
 export default function TableContainer() {
   const [tableData, setTableData] = useState([]);
-  // load initial data.
 
+  // load initial data.
   useEffect(() => {
     async function getData() {
       let skip = 0;
-      // skip<3000 because too slow otherwise... this is a problem
+      // TODO: !!!skip<3000 because too slow otherwise... this is a problem
       while (skip < 3000) {
-        console.log("skip and table data length: ", skip, tableData.length);
         const res = await fetch(
           `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
         );
@@ -33,19 +32,7 @@ export default function TableContainer() {
     // eslint-disable-next-line
   }, []);
 
-  const getColumnWidth = (rows, accessor, headerText) => {
-    // pass in page, NOT rows - rows too much data and no benefit
-    const maxWidth = 400;
-    const magicSpacing = 10;
-    const rowLenArr = rows.map((row) => {
-      return (`${row[accessor]}` || "").length;
-    });
-    const potentialLenArr = [...rowLenArr, headerText.length];
-    const cellLength = Math.max(...potentialLenArr);
-    const result = Math.min(maxWidth, cellLength * magicSpacing);
-    return result;
-  };
-
+  // convert raw tableData into format suitable for our table
   const data = useMemo(() => {
     const flatData = [];
     tableData.forEach((row) => {
@@ -74,6 +61,22 @@ export default function TableContainer() {
     return flatData;
   }, [tableData]);
 
+  // function to calculate default column width
+  // eslint-disable-next-line
+  const getColumnWidth = (rows, accessor, headerText) => {
+    // pass in page, NOT rows - rows too much data and no benefit
+    const maxWidth = 400;
+    const magicSpacing = 10;
+    const rowLenArr = rows.map((row) => {
+      return (`${row[accessor]}` || "").length;
+    });
+    const potentialLenArr = [...rowLenArr, headerText.length];
+    const cellLength = Math.max(...potentialLenArr);
+    const result = Math.min(maxWidth, cellLength * magicSpacing);
+    return result;
+  };
+
+  // define table columns
   const columns = useMemo(
     () => [
       {

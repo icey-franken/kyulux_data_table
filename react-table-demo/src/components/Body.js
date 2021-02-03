@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function Body({ bodyProps }) {
-	const { getTableBodyProps, prepareRow, page } = bodyProps;
+  const { getTableBodyProps, prepareRow, page } = bodyProps;
 
   return (
     <div className="rows" {...getTableBodyProps()}>
@@ -23,7 +23,11 @@ export default function Body({ bodyProps }) {
           >
             {row.cells.map((cell, idx) => {
               return (
-                <div {...cell.getCellProps()} className="cell" key={idx}>
+                <div
+                  {...cell.getCellProps()}
+                  className="cell data-cell"
+                  key={idx}
+                >
                   {cell.render("Cell")}
                 </div>
               );

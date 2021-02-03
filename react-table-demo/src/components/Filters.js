@@ -1,9 +1,6 @@
-// !!! can live elsewhere
 export const DefaultColumnFilter = ({ column }) => {
-  // console.log(column);
   const { filterValue, preFilteredRows, setFilter } = column;
   const count = preFilteredRows.length;
-
   return (
     <input
       size={column.width}
@@ -23,14 +20,13 @@ export const GlobalFilter = ({
   setGlobalFilter,
 }) => {
   const count = preGlobalFilteredRows && preGlobalFilteredRows.length;
-
   return (
     <span>
       Search:{" "}
       <input
         value={globalFilter || ""}
         onChange={(e) => {
-          setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+          setGlobalFilter(e.target.value || undefined);
         }}
         placeholder={`${count} records...`}
         style={{
@@ -40,4 +36,3 @@ export const GlobalFilter = ({
     </span>
   );
 };
-// -!!!

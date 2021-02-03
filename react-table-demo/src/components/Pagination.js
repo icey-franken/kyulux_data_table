@@ -3,17 +3,16 @@ import React from "react";
 export default function Pagination({ paginationProps }) {
   const {
     pageIndex,
-		pageSize,
+    pageSize,
     pageOptions,
-		pageCount,
-		gotoPage,
-		previousPage,
-		nextPage,
-		setPageSize,
+    pageCount,
+    gotoPage,
+    previousPage,
+    nextPage,
+    setPageSize,
     canPreviousPage,
     canNextPage,
   } = paginationProps;
-  //TODO: I want pagination component to remain in the center of the viewport
   return (
     <div className="pagination">
       <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
