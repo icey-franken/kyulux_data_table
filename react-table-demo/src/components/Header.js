@@ -3,14 +3,14 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export default function HeaderComp({ headerProps }) {
   const { setColumnOrder, headerGroups, allColumns } = headerProps;
-	const currentColOrder = useRef();
-	const [resizing, setResizing] = useState(false)
+  const currentColOrder = useRef();
+  const [resizing, setResizing] = useState(false);
   // ---------------------------------------
   const getItemStyle = (snapshot, draggableStyle, column) => {
-    console.log(snapshot, column);
+    // console.log(snapshot, column);
     const { isDragging, isDropAnimating } = snapshot;
     const { isResizing } = column;
-    console.log("isResizing?: ", isResizing);
+    // console.log("isResizing?: ", isResizing);
     const itemStyle = isResizing
       ? { background: "grey" }
       : {
@@ -55,7 +55,7 @@ export default function HeaderComp({ headerProps }) {
   };
 
   const handleDragUpdate = (dragUpdateObj, b) => {
-    console.log(dragUpdateObj, b);
+    // console.log(dragUpdateObj, b);
     if (!allColumns[dragUpdateObj.source.index].isResizing) {
       const colOrder = [...currentColOrder.current];
       const sIndex = dragUpdateObj.source.index;
@@ -102,7 +102,8 @@ export default function HeaderComp({ headerProps }) {
                       draggableId={column.id}
                       index={index}
                       // isDragDisabled={!(column.accessor && !column.isResizing)}
-                      isDragDisabled={!column.accessor}
+                      isDragDisabled={!(column.accessor && !resizing)}
+                      // isDragDisabled={!column.accessor}
                     >
                       {(provided, snapshot) => {
                         // console.log(column.getHeaderProps());
@@ -119,7 +120,6 @@ export default function HeaderComp({ headerProps }) {
                             };
                         // console.log("draggable: ", provided.draggableProps);
                         // console.log("dragHandle: ", provided.dragHandleProps);
-
                         return (
                           <div
                             {...props}
@@ -128,36 +128,65 @@ export default function HeaderComp({ headerProps }) {
                             // {...column.getHeaderProps(column.getSortByToggleProps())}
                             onClick={(e) => {
                               // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
-                              if (typeof props.onClick === "function") {
+                              // resizing conditional and target id check prevents resorting while resizing
+                              if (
+                                typeof props.onClick === "function" &&
+                                !resizing &&
+                                e.target.id !== "resizer"
+                              ) {
                                 props.onClick(e);
                               }
                               // TODO: add loading modal while sorting
                               // TODO: find a way to remove modal after sorting complete
                             }}
-                          // >
-                          //   <div
-                              // {...extraProps}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                ...getItemStyle(
-                                  snapshot,
-                                  provided.draggableProps.style,
-                                  column
-                                ),
-                                ...props.style
+                            // >
+                            //   <div
+                            // {...extraProps}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              ...getItemStyle(
+                                snapshot,
+                                provided.draggableProps.style,
+                                column
+                              ),
+                              ...props.style,
+                            }}
+                            // {...dragProps}
+                          >
+                            {column.render("Header")}
+                            <div
+                              id="resizer"
+                              {...column.getResizerProps()}
+                              className={`resizer ${
+                                column.isResizing ? "isResizing" : ""
+                              }`}
+                              onMouseDown={(e) => {
+                                column.getResizerProps().onMouseDown(e);
+                                console.log(
+                                  "hits resizer down click. e: ",
+                                  e,
+                                  "target: ",
+                                  e.target
+                                );
+                                e.preventDefault();
+                                setResizing(true);
                               }}
-                              // {...dragProps}
-                            >
-                              {column.render("Header")}
-                              <div
-                                {...column.getResizerProps()}
-                                className={`resizer ${
-                                  column.isResizing ? "isResizing" : ""
-                                }`}
-                              />
-                            </div>
+                              // not guaranteed to hit onMouseUp event...
+                              // if we miss mouseup event, then resizing remains as true and drag disabled.
+                              onMouseUp={(e) => {
+                                console.log(
+                                  "hits resizer up click. e: ",
+                                  e,
+                                  "target: ",
+                                  e.target
+                                );
+                                setResizing(false);
+                                e.preventDefault();
+                              }}
+                            />
+                          </div>
                           // </div>
                         );
                       }}

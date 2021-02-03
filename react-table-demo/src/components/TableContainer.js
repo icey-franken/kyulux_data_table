@@ -46,15 +46,20 @@ const Styles = styled.div`
     white-space: nowrap;
     display: inline-block;
     box-sizing: border-box;
-		line-height: 30px;
-		border: 1px solid green;
-    /* margin: 10px!important; */
+    line-height: 30px;
+    border: 1px solid green;
+		/* margin: 10px!important; */
   }
   .header.cell {
     /* border: 1px solid green; */
     height: 100%;
     border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
+		border-bottom: 5px solid transparent;
+		overflow: hidden;
+
+  }
+  .header.cell:focus {
+    outline: none;
   }
 
   .row.body:hover {
@@ -65,28 +70,28 @@ const Styles = styled.div`
     height: 100%;
     /* line-height: 31px; */
     border-right: 1px solid #000;
-    /* padding-left: 5px; */
+		/* padding-left: 5px; */
+		overflow-x: hidden;
 
     :last-child {
       border: 0;
     }
+  }
+  .resizer {
+    display: inline-block;
+    background: lightblue;
+    width: 5px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(50%);
+    z-index: 1;
+    ${"" /* prevents from scrolling while dragging on touch devices */}
+    touch-action:none;
 
-    .resizer {
-      display: inline-block;
+    &.isResizing {
       background: blue;
-      width: 10px;
-      height: 100%;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transform: translateX(50%);
-      z-index: 1;
-      ${"" /* prevents from scrolling while dragging on touch devices */}
-      touch-action:none;
-
-      &.isResizing {
-        background: red;
-      }
     }
   }
 `;
