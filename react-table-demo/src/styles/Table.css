@@ -76,7 +76,8 @@
   height: 100%;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  overflow: hidden;
+	overflow: hidden;
+	user-select: none;
 }
 .header.cell:focus {
   outline: none;

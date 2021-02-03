@@ -33,12 +33,12 @@ export default function HeaderComp({ headerProps }) {
     wiggleScreen();
     // console.log("snapshot before: ", snapshot);
     // if (column.Header==='Gender' && snapshot.isDropAnimating) {
-		// 	snapshot.isDragging = false;
+    // 	snapshot.isDragging = false;
     // }
     // console.log("snapshot after: ", snapshot);
 
-		const { isDragging, isDropAnimating } = snapshot;
-		const { isResizing } = column;
+    const { isDragging, isDropAnimating } = snapshot;
+    const { isResizing } = column;
     // console.log("isResizing?: ", isResizing);
     if (column.Header === "Gender") {
       console.log(
@@ -69,9 +69,6 @@ export default function HeaderComp({ headerProps }) {
     const itemStyle = isResizing
       ? { background: "grey" }
       : {
-          // suggested to move draggable style to the end so last applied
-          ...draggableStyle,
-          transform: null,
           // position: isDragging ? "absolute" : "relative",
           // some basic styles to make the items look a bit nicer
           // prevent highlighting
@@ -81,15 +78,16 @@ export default function HeaderComp({ headerProps }) {
           background: isDragging ? "grey" : "initial",
           // ...(!isDragging && { transform: "translate(0,0)" }),
           ...(isDropAnimating && { transitionDuration: "0.001s" }),
-
           // styles we need to apply on draggables
 
           pointerEvents: "auto",
           touchAction: "none",
-
+          // suggested to move draggable style to the end so last applied
+          ...draggableStyle,
+          transform: null,
           ...posStyle,
         };
-    if (column.Header === "gender") {
+    if (column.Header === "Gender") {
       console.log("item style: ", itemStyle);
     }
     return itemStyle;
@@ -113,16 +111,16 @@ export default function HeaderComp({ headerProps }) {
 
   const handleDragStart = (dragStartObj) => {
     // console.log(allColumns[dragStartObj.source.index].isResizing);
-		// only change order if column is NOT being resized
-		console.log('hits handle drag start')
+    // only change order if column is NOT being resized
+    console.log("hits handle drag start");
     if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
       currentColOrder.current = allColumns.map((o) => o.id);
     }
   };
 
   const handleDragUpdate = (dragUpdateObj, b) => {
-		// console.log(dragUpdateObj, b);
-		console.log('hits handle drag update')
+    // console.log(dragUpdateObj, b);
+    console.log("hits handle drag update");
     if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
       const colOrder = [...currentColOrder.current];
       const sIndex = dragUpdateObj.source.index;
@@ -134,10 +132,10 @@ export default function HeaderComp({ headerProps }) {
         setColumnOrder(colOrder);
       }
     }
-	};
-	const handleDragEnd = (e)=>{
-		console.log('hits handle drag end in draggable - e: ', e)
-	}
+  };
+  const handleDragEnd = (e) => {
+    console.log("hits handle drag end in draggable - e: ", e);
+  };
 
   return (
     <>
@@ -177,8 +175,8 @@ export default function HeaderComp({ headerProps }) {
           <DragDropContext
             key={hg_idx}
             onDragStart={handleDragStart}
-						onDragUpdate={handleDragUpdate}
-						onDragEnd={handleDragEnd}
+            onDragUpdate={handleDragUpdate}
+            onDragEnd={handleDragEnd}
             // onDragEnd={(e) => {
             //   console.log("drag end event: ", e);
             // }}
@@ -214,17 +212,16 @@ export default function HeaderComp({ headerProps }) {
                         "old isDragDisabled: ",
                         !(column.accessor && !column.isResizing && !resizing)
                       );
-										}
-										console.log(column, hg_idx, 'drag disabled? :', col_idx === 0|| !(column.accessor && !column.isResizing && !resizing))
-										console.log(hg_idx, hg_idx === 0, !!column.accessor, !column.isResizing, !resizing, 'total: ', hg_idx === 0|| !(column.accessor && !column.isResizing && !resizing))
+                    }
                     return (
                       <Draggable
                         key={column.id}
                         draggableId={column.id}
-												index={col_idx}
-												// only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
+                        index={col_idx}
+                        // only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
                         isDragDisabled={
-                          hg_idx === 0|| !(column.accessor && !column.isResizing && !resizing)
+                          hg_idx === 0 ||
+                          !(column.accessor && !column.isResizing && !resizing)
                         }
                         // isDragDisabled={false}
                         // disabled={false}
