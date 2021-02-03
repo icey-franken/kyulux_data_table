@@ -17,18 +17,20 @@ import Body from "./Body";
 import Pagination from "./Pagination";
 
 // !!! can live elsewhere
-const DefaultColumnFilter = ({
-  column: { filterValue, preFilteredRows, setFilter },
-}) => {
+const DefaultColumnFilter = ({column}) => {
+	console.log(column)
+	const { filterValue, preFilteredRows, setFilter } = column
   const count = preFilteredRows.length;
 
-  return (
+	return (
     <input
+		size={column.width}
       value={filterValue || ""}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
-      placeholder={`Search ${count} records...`}
+			placeholder={`Search ${count} records...`}
+			style={{textAlign:"left"}}
     />
   );
 };

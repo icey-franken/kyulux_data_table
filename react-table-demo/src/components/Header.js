@@ -122,17 +122,6 @@ export default function HeaderComp({ headerProps }) {
                     const props = column.getHeaderProps(
                       column.getSortByToggleProps()
                     );
-                    console.log(
-                      "column and index from headerGroup.headers.map: ",
-                      col_idx,
-                      column
-                    );
-                    console.log(
-                      "headergroup from headerGroup.headers.map: ",
-                      headerGroup
-                    );
-                    console.log(hg_idx);
-
                     return (
                       <Draggable
                         key={column.id}
@@ -165,19 +154,7 @@ export default function HeaderComp({ headerProps }) {
                                 // ${column.isSorted ? (column.isSortedDesc ? "descSort" : "ascSort") : "noSort"}`}
 
                                 // {...column.getHeaderProps(column.getSortByToggleProps())}
-                                onClick={(e) => {
-                                  // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
-                                  // resizing conditional and target id check prevents resorting while resizing
-                                  if (
-                                    typeof props.onClick === "function" &&
-                                    !resizing &&
-                                    e.target.id !== "resizer"
-                                  ) {
-                                    props.onClick(e);
-                                  }
-                                  // TODO: add loading modal while sorting
-                                  // TODO: find a way to remove modal after sorting complete
-                                }}
+
                                 // >
                                 //   <div
                                 // {...extraProps}
@@ -194,16 +171,32 @@ export default function HeaderComp({ headerProps }) {
                                   ...props.style,
                                   // height: (hg_idx === 1 ? '300px': 'inherit')
                                 }}
-                                // {...dragProps}
+																// {...dragProps}
+																// spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
+																onClick={null}
                               >
                                 <div
-                                  className={`${
+                                  className={`sortable ${
                                     column.isSorted
                                       ? column.isSortedDesc
                                         ? "descSort"
                                         : "ascSort"
-                                      : "noSort"
+                                      : ""
                                   }`}
+                                  onClick={(e) => {
+                                    // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
+                                    // resizing conditional and target id check prevents resorting while resizing
+                                    console.log('e.target from click', e.target);
+                                    if (
+                                      typeof props.onClick === "function" &&
+                                      !resizing &&
+                                      e.target.id !== "resizer"
+                                    ) {
+                                      props.onClick(e);
+                                    }
+                                    // TODO: add loading modal while sorting
+                                    // TODO: find a way to remove modal after sorting complete
+                                  }}
                                 >
                                   {/* {column.render("Header")} */}
                                   {heading}

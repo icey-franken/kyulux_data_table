@@ -82,14 +82,14 @@ const Styles = styled.div`
     overflow-x: hidden;
 
     :last-child {
-      border: 0;
+      border-right: 0;
     }
   }
   .resizer {
     display: inline-block;
     background: rgba(173, 216, 230, 0.7);
     width: 5px;
-    height: 100%;
+    height: 40px;
     position: absolute;
     right: 0;
     top: 0;
@@ -113,7 +113,9 @@ const Styles = styled.div`
 
   /* !!! */
   .filter {
-    width: 100%;
+		/* width: 100%; */
+		/* width: 100px; */
+		cursor: default;
     /* height: 100%; */
     /* border: 4px solid purple; */
     box-sizing: border-box;

@@ -4,7 +4,13 @@
 .descSort {
   border-bottom: 5px solid red !important;
 }
+.sortable{
+  border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	height: 40px;
+	/* position: absolute; */
 
+}
 .pagination {
 	position: fixed;
 	/* position: sticky;  */
