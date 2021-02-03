@@ -47,21 +47,22 @@ const Styles = styled.div`
     display: inline-block;
     box-sizing: border-box;
     line-height: 30px;
-    border: 1px solid green;
-		/* margin: 10px!important; */
+    /* border: 1px solid green; */
+    /* margin: 10px!important; */
   }
   .header.cell {
     /* border: 1px solid green; */
     height: 100%;
     border-top: 5px solid transparent;
-		border-bottom: 5px solid transparent;
-		overflow: hidden;
-
+    border-bottom: 5px solid transparent;
+    overflow: hidden;
   }
   .header.cell:focus {
     outline: none;
   }
-
+  .current-dropzone {
+    opacity: 0.6;
+  }
   .row.body:hover {
     background-color: rgb(250, 100, 100) !important;
   }
@@ -70,8 +71,8 @@ const Styles = styled.div`
     height: 100%;
     /* line-height: 31px; */
     border-right: 1px solid #000;
-		/* padding-left: 5px; */
-		overflow-x: hidden;
+    /* padding-left: 5px; */
+    overflow-x: hidden;
 
     :last-child {
       border: 0;
@@ -79,19 +80,28 @@ const Styles = styled.div`
   }
   .resizer {
     display: inline-block;
-    background: lightblue;
+    background: rgba(173, 216, 230, 0.7);
     width: 5px;
     height: 100%;
     position: absolute;
     right: 0;
     top: 0;
-    transform: translateX(50%);
+    /* transform: translateX(5px); */
     z-index: 1;
+    overflow-x: visible !important;
     ${"" /* prevents from scrolling while dragging on touch devices */}
     touch-action:none;
+    transition: width 0.5s;
 
     &.isResizing {
-      background: blue;
+			background: rgba(173, 216, 230, 1.0);
+
+    }
+    &:hover {
+			width: 10px;
+			background: rgba(173, 216, 230, 1.0);
+
+      /* transform: translateX(0); */
     }
   }
 `;
