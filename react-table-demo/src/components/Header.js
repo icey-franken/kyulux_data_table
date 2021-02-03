@@ -30,7 +30,7 @@ export default function HeaderComp({ headerProps }) {
   };
 
   const getItemStyle = (snapshot, draggableStyle, column) => {
-    wiggleScreen();
+    // wiggleScreen();
     // console.log("snapshot before: ", snapshot);
     // if (column.Header==='Gender' && snapshot.isDropAnimating) {
     // 	snapshot.isDragging = false;
@@ -40,17 +40,17 @@ export default function HeaderComp({ headerProps }) {
     const { isDragging, isDropAnimating } = snapshot;
     const { isResizing } = column;
     // console.log("isResizing?: ", isResizing);
-    if (column.Header === "Gender") {
-      console.log(
-        "---------------get item style for Gender: \n",
-        "draggableStyle",
-        draggableStyle,
-        "isDragging",
-        isDragging,
-        "isDropAnimating",
-        isDropAnimating
-      );
-    }
+    // if (column.Header === "Gender") {
+    //   console.log(
+    //     "---------------get item style for Gender: \n",
+    //     "draggableStyle",
+    //     draggableStyle,
+    //     "isDragging",
+    //     isDragging,
+    //     "isDropAnimating",
+    //     isDropAnimating
+    //   );
+    // }
     const posStyle =
       isDragging && !isDropAnimating
         ? {
@@ -87,9 +87,9 @@ export default function HeaderComp({ headerProps }) {
           transform: null,
           ...posStyle,
         };
-    if (column.Header === "Gender") {
-      console.log("item style: ", itemStyle);
-    }
+    // if (column.Header === "Gender") {
+    //   console.log("item style: ", itemStyle);
+    // }
     return itemStyle;
   };
 
@@ -131,12 +131,15 @@ export default function HeaderComp({ headerProps }) {
         colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
         setColumnOrder(colOrder);
       }
-      console.log("----------------colOrder", colOrder);
     }
   };
   const handleDragEnd = (e) => {
-    console.log("hits handle drag end in draggable - e: ", e);
-    wiggleScreen();
+    // console.log("hits handle drag end in draggable - e: ", e);
+    // wiggleScreen();
+    setTimeout(() => {
+      console.log("timeout runs");
+      wiggleScreen();
+    }, 1);
   };
 
   return (
@@ -158,7 +161,17 @@ export default function HeaderComp({ headerProps }) {
           setResizing(false);
         }}
       ></div> */}
-      <div onMouseUp={handleDragEnd}>
+      <div
+        onMouseUp={(e) => {
+          console.log(
+            "drag end event from onMouseUp: ",
+            e,
+            e.target,
+            e.currentTarget
+          );
+          handleDragEnd(e);
+        }}
+      >
         <div>
           <div
             colSpan={visibleColumns.length}
@@ -178,7 +191,10 @@ export default function HeaderComp({ headerProps }) {
             key={hg_idx}
             onDragStart={handleDragStart}
             onDragUpdate={handleDragUpdate}
-            onDragEnd={handleDragEnd}
+            onDragEnd={(e) => {
+              console.log("drag end event from dragdropcontext: ", e);
+              // handleDragEnd(e);
+            }}
             // onDragEnd={(e) => {
             //   console.log("drag end event: ", e);
             // }}
@@ -204,17 +220,6 @@ export default function HeaderComp({ headerProps }) {
                     const props = column.getHeaderProps(
                       column.getSortByToggleProps()
                     );
-                    if (column.id === "report_number") {
-                      console.log(
-                        "----------start report number\n",
-                        "column.isResizing: ",
-                        column.isResizing,
-                        "resizing: ",
-                        resizing,
-                        "old isDragDisabled: ",
-                        !(column.accessor && !column.isResizing && !resizing)
-                      );
-                    }
                     return (
                       <Draggable
                         key={column.id}
@@ -225,10 +230,9 @@ export default function HeaderComp({ headerProps }) {
                           hg_idx === 0 ||
                           !(column.accessor && !column.isResizing && !resizing)
                         }
-                        // isDragDisabled={false}
-                        // disabled={false}
                         onDragEnd={(e) => {
-                          console.log("drag end event: ", e);
+                          console.log("drag end event from draggable: ", e);
+                          handleDragEnd(e);
                         }}
                       >
                         {(draggableProvided, snapshot) => {
@@ -245,16 +249,16 @@ export default function HeaderComp({ headerProps }) {
                                 ...draggableProvided.dragHandleProps,
                               };
                           const heading = column.render("Header");
-                          draggableProvided.draggableProps.onTransitionEnd = (
-                            e
-                          ) => {
-                            console.log(
-                              "on transition end event: ",
-                              e,
-                              "target",
-                              e.target
-                            );
-                          };
+                          // draggableProvided.draggableProps.onTransitionEnd = (
+                          //   e
+                          // ) => {
+                          //   console.log(
+                          //     "on transition end event: ",
+                          //     e,
+                          //     "target",
+                          //     e.target
+                          //   );
+                          // };
                           // console.log(
                           //   "draggableProvided:",
                           //   draggableProvided,
