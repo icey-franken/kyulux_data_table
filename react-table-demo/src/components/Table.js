@@ -1,34 +1,53 @@
-import React, { useEffect, useState, useMemo } from "react";
-import styled from "styled-components";
+import React, { useMemo } from "react";
 import {
   useTable,
-  useAbsoluteLayout,
   useColumnOrder,
   usePagination,
-  useSortBy,
   useResizeColumns,
   useBlockLayout,
+  useFilters,
+  useGlobalFilter,
+  useSortBy,
 } from "react-table";
-
+import { DefaultColumnFilter } from "./Filters";
 import Header from "./Header";
 import Body from "./Body";
 import Pagination from "./Pagination";
 
+// here we create the table
 export default function Table({ columns, data }) {
-  // Use the state and functions returned from useTable to build your UI
+  const defaultColumn = useMemo(
+    () => ({ Filter: DefaultColumnFilter, width: 200 }),
+    []
+  );
 
-  const defaultColumn = useMemo(() => ({ width: 200 }), []);
+  // define our text filter
+  const filterTypes = useMemo(
+    () => ({
+      text: (rows, id, filterValue) => {
+        return rows.filter((row) => {
+          const rowValue = row.values[id];
+          return rowValue !== undefined
+            ? String(rowValue)
+                .toLowerCase()
+                .includes(String(filterValue).toLowerCase())
+            : true;
+        });
+      },
+    }),
+    []
+  );
 
+  // use props/functions returned from useTable to build UI
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    // rows, // use page instead - less data to load
     prepareRow,
     allColumns,
     setColumnOrder,
-    // state,
-    state: { pageIndex, pageSize },
+    state,
     pageOptions,
     pageCount,
     page,
@@ -38,31 +57,45 @@ export default function Table({ columns, data }) {
     setPageSize,
     canPreviousPage,
     canNextPage,
+    visibleColumns,
+    preGlobalFilteredRows,
+    setGlobalFilter,
   } = useTable(
     {
       columns,
       data,
-      // defaultColumn,
       initialState: { pageSize: 10 },
       autoResetPage: false,
-      // className: '-striped -highlight'
+      defaultColumn,
+      filterTypes,
     },
     useColumnOrder,
-    // useAbsoluteLayout,
     useBlockLayout,
+    useResizeColumns,
+    useFilters,
+    useGlobalFilter,
     useSortBy,
-    usePagination,
-    useResizeColumns
+    usePagination
   );
 
-  const headerProps = { setColumnOrder, headerGroups, allColumns };
+  // prepare props for main components - consider implementing table context
+  const headerProps = {
+    setColumnOrder,
+    headerGroups,
+    allColumns,
+    visibleColumns,
+    preGlobalFilteredRows,
+    globalFilter: state.globalFilter,
+    setGlobalFilter,
+  };
+
   const bodyProps = { getTableBodyProps, prepareRow, page };
+
   const paginationProps = {
-    pageIndex,
-    pageSize,
+    pageIndex: state.pageIndex,
+    pageSize: state.pageSize,
     pageOptions,
     pageCount,
-    // page,
     gotoPage,
     previousPage,
     nextPage,
@@ -71,7 +104,6 @@ export default function Table({ columns, data }) {
     canNextPage,
   };
 
-  // Render the UI for your table
   return (
     <>
       <div {...getTableProps()} className="table">
