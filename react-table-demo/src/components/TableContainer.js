@@ -1,3 +1,6 @@
+// filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
+// freeze header pane https://codesandbox.io/s/k9n3y82wov
+
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 import styled from "styled-components";
@@ -22,8 +25,8 @@ const Styles = styled.div`
   }
 
   .rows {
-    overflow-y: hidden;
-    overflow-x: hidden;
+    /* overflow-y: hidden;
+    overflow-x: hidden; */
   }
 
   .row {
@@ -38,12 +41,28 @@ const Styles = styled.div`
   }
 
   .header-group {
-		height: 0px;
-		white-space: nowrap;
-		display: inline-block;
+    height: 40px;
+    background-color: lightgrey;
+    white-space: nowrap;
+    display: inline-block;
+    box-sizing: border-box;
+    line-height: 30px;
+    /* border: 1px solid green; */
     /* margin: 10px!important; */
   }
-
+  .header.cell {
+    /* border: 1px solid green; */
+    height: 100%;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    overflow: hidden;
+  }
+  .header.cell:focus {
+    outline: none;
+  }
+  .current-dropzone {
+    opacity: 0.6;
+  }
   .row.body:hover {
     background-color: rgb(250, 100, 100) !important;
   }
@@ -53,27 +72,36 @@ const Styles = styled.div`
     /* line-height: 31px; */
     border-right: 1px solid #000;
     /* padding-left: 5px; */
+    overflow-x: hidden;
 
     :last-child {
       border: 0;
     }
+  }
+  .resizer {
+    display: inline-block;
+    background: rgba(173, 216, 230, 0.7);
+    width: 5px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    /* transform: translateX(5px); */
+    z-index: 1;
+    overflow-x: visible !important;
+    ${"" /* prevents from scrolling while dragging on touch devices */}
+    touch-action:none;
+    transition: width 0.5s;
 
-    .resizer {
-      display: inline-block;
-      background: blue;
-      width: 10px;
-      height: 100%;
-      position: absolute;
-      right: 0;
-      top: 0;
-      transform: translateX(50%);
-      z-index: 1;
-      ${"" /* prevents from scrolling while dragging on touch devices */}
-      touch-action:none;
+    &.isResizing {
+			background: rgba(173, 216, 230, 1.0);
 
-      &.isResizing {
-        background: red;
-      }
+    }
+    &:hover {
+			width: 10px;
+			background: rgba(173, 216, 230, 1.0);
+
+      /* transform: translateX(0); */
     }
   }
 `;
@@ -191,7 +219,7 @@ export default function TableContainer() {
             accessor: "consumer.gender",
             width: 66,
           },
-				],
+        ],
       },
       {
         Header: "Date Created",
