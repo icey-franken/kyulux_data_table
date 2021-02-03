@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { GlobalFilter } from "./Filters";
 
@@ -46,6 +46,7 @@ export default function HeaderComp({ headerProps }) {
     return itemStyle;
   };
 
+  // Original getItemStyle function
   // const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
   //   ...draggableStyle,
   //   // some basic styles to make the items look a bit nicer
@@ -64,14 +65,14 @@ export default function HeaderComp({ headerProps }) {
   const handleDragStart = (dragStartObj) => {
     // console.log(allColumns[dragStartObj.source.index].isResizing);
     // only change order if column is NOT being resized
-    // if (!allColumns[dragStartObj.source.index].isResizing) {
-    currentColOrder.current = allColumns.map((o) => o.id);
-    // }
+    if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
+      currentColOrder.current = allColumns.map((o) => o.id);
+    }
   };
 
   const handleDragUpdate = (dragUpdateObj, b) => {
     // console.log(dragUpdateObj, b);
-    if (!allColumns[dragUpdateObj.source.index].isResizing) {
+    if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
       const colOrder = [...currentColOrder.current];
       const sIndex = dragUpdateObj.source.index;
       const dIndex =
@@ -137,7 +138,7 @@ export default function HeaderComp({ headerProps }) {
                   }`}
                   // this prevents resizing being left as true - if user tries to drag and it doesn't work, release of click will set resizing to false and allow drag
                   onMouseUp={(e) => {
-                    console.log("e from mouse up in parent: ", e);
+                    // console.log("e from mouse up in parent: ", e);
                     setResizing(false);
                   }}
                 >
@@ -153,7 +154,6 @@ export default function HeaderComp({ headerProps }) {
                         isDragDisabled={
                           !(column.accessor && !column.isResizing && !resizing)
                         }
-                        // isDragDisabled={!column.accessor}
                       >
                         {(provided, snapshot) => {
                           // console.log(column.getHeaderProps());
@@ -174,17 +174,8 @@ export default function HeaderComp({ headerProps }) {
                               <div
                                 {...props}
                                 className={`cell header`}
-                                // ${column.isSorted ? (column.isSortedDesc ? "descSort" : "ascSort") : "noSort"}`}
-
-                                // {...column.getHeaderProps(column.getSortByToggleProps())}
-
-                                // >
-                                //   <div
-                                // {...extraProps}
                                 ref={provided.innerRef}
                                 {...dragProps}
-                                // {...provided.draggableProps}
-                                // {...provided.dragHandleProps}
                                 style={{
                                   ...getItemStyle(
                                     snapshot,
@@ -192,9 +183,7 @@ export default function HeaderComp({ headerProps }) {
                                     column
                                   ),
                                   ...props.style,
-                                  // height: (hg_idx === 1 ? '300px': 'inherit')
                                 }}
-                                // {...dragProps}
                                 // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
                                 onClick={null}
                               >
@@ -209,10 +198,10 @@ export default function HeaderComp({ headerProps }) {
                                   onClick={(e) => {
                                     // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
                                     // resizing conditional and target id check prevents resorting while resizing
-                                    console.log(
-                                      "e.target from click",
-                                      e.target
-                                    );
+                                    // console.log(
+                                    //   "e.target from click",
+                                    //   e.target
+                                    // );
                                     if (
                                       typeof props.onClick === "function" &&
                                       !resizing &&
@@ -224,7 +213,6 @@ export default function HeaderComp({ headerProps }) {
                                     // TODO: find a way to remove modal after sorting complete
                                   }}
                                 >
-                                  {/* {column.render("Header")} */}
                                   {heading}
                                   {/* conditional rendering of resizing tab */}
                                   {typeof heading === "string" ? (
@@ -236,12 +224,12 @@ export default function HeaderComp({ headerProps }) {
                                       }`}
                                       onMouseDown={(e) => {
                                         column.getResizerProps().onMouseDown(e);
-                                        console.log(
-                                          "hits resizer down click. e: ",
-                                          e,
-                                          "target: ",
-                                          e.target
-                                        );
+                                        // console.log(
+                                        //   "hits resizer down click. e: ",
+                                        //   e,
+                                        //   "target: ",
+                                        //   e.target
+                                        // );
                                         // e.preventDefault();
                                         setResizing(true);
                                       }}
@@ -261,15 +249,12 @@ export default function HeaderComp({ headerProps }) {
                                       // }}
                                     />
                                   ) : null}
-                                  {/* // </div> */}
-                                  {/* // !!! */}
                                 </div>
                                 {hg_idx === 1 && column.canFilter ? (
                                   <div className="filter">
                                     {column.render("Filter")}
                                   </div>
                                 ) : null}
-                                {/* // -!!! */}
                               </div>
                             </>
                           );
@@ -277,7 +262,6 @@ export default function HeaderComp({ headerProps }) {
                       </Draggable>
                     );
                   })}
-
                   {droppableProvided.placeholder}
                 </div>
               )}

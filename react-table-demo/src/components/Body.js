@@ -17,7 +17,6 @@ export default function Body({ bodyProps }) {
                 i % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
               }`,
             }}
-            // onHover={()=>}
             className="row body"
             key={i}
           >
