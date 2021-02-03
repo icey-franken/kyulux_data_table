@@ -22,16 +22,38 @@ export default function HeaderComp({ headerProps }) {
   // }, [resizing]);
   // ---------------------------------------
   const getItemStyle = (snapshot, draggableStyle, column) => {
-    // console.log(snapshot, column);
     const { isDragging, isDropAnimating } = snapshot;
     const { isResizing } = column;
     // console.log("isResizing?: ", isResizing);
+    if (column.Header === "Gender") {
+      console.log(
+        "start get item style: \n",
+        "draggableStyle",
+        draggableStyle,
+        "isDragging",
+        isDragging,
+        "isDropAnimating",
+        isDropAnimating
+      );
+    }
+    const posStyle = isDragging
+      ? {
+          // position: "relative",
+          top: "0px",
+          left: "0px",
+        }
+      : {
+          position: "absolute",
+          background: "lightgrey",
+        };
+
     const itemStyle = isResizing
       ? { background: "grey" }
       : {
           ...draggableStyle,
+          // position: isDragging ? "absolute" : "relative",
           // some basic styles to make the items look a bit nicer
-          userSelect: "none",
+          // userSelect: "none",
 
           // change background colour if dragging
           //TODO: add a delay to avoid quick switch to green when resizing
@@ -41,8 +63,12 @@ export default function HeaderComp({ headerProps }) {
           ...(isDropAnimating && { transitionDuration: "0.001s" }),
 
           // styles we need to apply on draggables
+
+          ...posStyle,
         };
-    // console.log(itemStyle);
+    if (column.Header === "genter") {
+      console.log("item style: ", itemStyle);
+    }
     return itemStyle;
   };
 
@@ -146,6 +172,7 @@ export default function HeaderComp({ headerProps }) {
                     const props = column.getHeaderProps(
                       column.getSortByToggleProps()
                     );
+
                     return (
                       <Draggable
                         key={column.id}
@@ -154,6 +181,7 @@ export default function HeaderComp({ headerProps }) {
                         isDragDisabled={
                           !(column.accessor && !column.isResizing && !resizing)
                         }
+                        // isDragDisabled={true}
                       >
                         {(provided, snapshot) => {
                           // console.log(column.getHeaderProps());
@@ -171,6 +199,7 @@ export default function HeaderComp({ headerProps }) {
                           const heading = column.render("Header");
                           return (
                             <>
+                              {provided.placeHolder}
                               <div
                                 {...props}
                                 className={`cell header`}
@@ -186,6 +215,12 @@ export default function HeaderComp({ headerProps }) {
                                 }}
                                 // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
                                 onClick={null}
+                                // !!! move to higher component
+                                onMouseUp={(e) => {
+                                  console.log(e);
+                                  console.log(e.target);
+                                  console.log(e.target.style);
+                                }}
                               >
                                 <div
                                   className={`sortable ${
@@ -255,6 +290,7 @@ export default function HeaderComp({ headerProps }) {
                                     {column.render("Filter")}
                                   </div>
                                 ) : null}
+                                {droppableProvided.placeholder}
                               </div>
                             </>
                           );
@@ -262,7 +298,6 @@ export default function HeaderComp({ headerProps }) {
                       </Draggable>
                     );
                   })}
-                  {droppableProvided.placeholder}
                 </div>
               )}
             </Droppable>
