@@ -29,11 +29,16 @@
   text-align: center;
 }
 
+body{
+	/* overflow-x: scroll; */
+  /* overflow-y: scroll; */
+}
+
 .table {
   /* border: 1px solid #000; */
   /* max-width: 700px; */
-  overflow-x: auto;
-  /* overflow-x: hidden; */
+	overflow-x: auto;
+  /* overflow-y: scroll; */
   margin-bottom: 25px;
 }
 
@@ -76,7 +81,8 @@
   height: 100%;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  overflow: hidden;
+	overflow: hidden;
+	user-select: none;
 }
 .header.cell:focus {
   outline: none;
@@ -118,7 +124,7 @@
   z-index: 1;
   overflow-x: visible !important;
   /* ${"" prevents from scrolling while dragging on touch devices} */
-  touch-action: none;
+  /* touch-action: none; */
   transition: width 0.5s;
 }
 .isResizing {

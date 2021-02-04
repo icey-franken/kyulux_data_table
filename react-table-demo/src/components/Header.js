@@ -11,8 +11,11 @@ export default function HeaderComp({ headerProps }) {
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
+    wiggleScreen,
+    handleDragEnd,
   } = headerProps;
-  const currentColOrder = useRef();
+  // !!! uncomment after app test
+  // const currentColOrder = useRef();
   const [resizing, setResizing] = useState(false);
   // useEffect(() => {
   // 	console.log('hits use effect. Resizing: ', resizing)
@@ -21,54 +24,68 @@ export default function HeaderComp({ headerProps }) {
   //   }
   // }, [resizing]);
   // ---------------------------------------
+
   const getItemStyle = (snapshot, draggableStyle, column) => {
+    // wiggleScreen();
+    // console.log("snapshot before: ", snapshot);
+    // if (column.Header==='Gender' && snapshot.isDropAnimating) {
+    // 	snapshot.isDragging = false;
+    // }
+    // console.log("snapshot after: ", snapshot);
+
     const { isDragging, isDropAnimating } = snapshot;
     const { isResizing } = column;
     // console.log("isResizing?: ", isResizing);
-    if (column.Header === "Gender") {
-      console.log(
-        "start get item style: \n",
-        "draggableStyle",
-        draggableStyle,
-        "isDragging",
-        isDragging,
-        "isDropAnimating",
-        isDropAnimating
-      );
-    }
-    const posStyle = isDragging
-      ? {
-          // position: "relative",
-          top: "0px",
-          left: "0px",
-        }
-      : {
-          position: "absolute",
-          background: "lightgrey",
-        };
+    // if (column.Header === "Gender") {
+    //   console.log(
+    //     "---------------get item style for Gender: \n",
+    //     "draggableStyle",
+    //     draggableStyle,
+    //     "isDragging",
+    //     isDragging,
+    //     "isDropAnimating",
+    //     isDropAnimating
+    //   );
+    // }
+    const posStyle =
+      isDragging && !isDropAnimating
+        ? {
+            position: "fixed",
+            top: "0px",
+            left: "0px",
+            borderRadius: "5px",
+          }
+        : {
+            position: "absolute",
+            background: "lightgrey",
+            top: "0px",
+            left: "0px",
+          };
 
     const itemStyle = isResizing
       ? { background: "grey" }
       : {
-          ...draggableStyle,
           // position: isDragging ? "absolute" : "relative",
           // some basic styles to make the items look a bit nicer
-          // userSelect: "none",
-
+          // prevent highlighting
+          userSelect: "none",
           // change background colour if dragging
           //TODO: add a delay to avoid quick switch to green when resizing
-          background: isDragging ? "lightgreen" : "initial",
-
+          background: isDragging ? "grey" : "initial",
           // ...(!isDragging && { transform: "translate(0,0)" }),
-          ...(isDropAnimating && { transitionDuration: "0.001s" }),
-
           // styles we need to apply on draggables
 
+          // suggested to move draggable style to the end so last applied
+          ...draggableStyle,
+          ...(isDropAnimating && { transitionDuration: "0.001s" }),
+          pointerEvents: "auto",
+          touchAction: "none",
+          transform: null,
           ...posStyle,
         };
-    if (column.Header === "genter") {
-      console.log("item style: ", itemStyle);
-    }
+    // if (column.Header === "Gender") {
+    //   console.log("item style: ", itemStyle);
+    // }
     return itemStyle;
   };
 
@@ -88,48 +105,8 @@ export default function HeaderComp({ headerProps }) {
   // });
   // ---------------------------------------
 
-  const handleDragStart = (dragStartObj) => {
-    // console.log(allColumns[dragStartObj.source.index].isResizing);
-    // only change order if column is NOT being resized
-    if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
-      currentColOrder.current = allColumns.map((o) => o.id);
-    }
-  };
-
-  const handleDragUpdate = (dragUpdateObj, b) => {
-    // console.log(dragUpdateObj, b);
-    if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
-      const colOrder = [...currentColOrder.current];
-      const sIndex = dragUpdateObj.source.index;
-      const dIndex =
-        dragUpdateObj.destination && dragUpdateObj.destination.index;
-      if (typeof sIndex === "number" && typeof dIndex === "number") {
-        colOrder.splice(sIndex, 1);
-        colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-        setColumnOrder(colOrder);
-      }
-    }
-  };
-
   return (
     <>
-      {/* idea is to have a parent element that covers entire screen with mouseup event handler - to ensure resizing doesn't get stuck on true if user moves mouse before unclicking */}
-      {/* <div
-        style={{
-          visibility: "hidden",
-          zIndex: "-5",
-          backgroundColor: "rgba(0,0,200,0.4)",
-          position: "absolute",
-          top: "-1000px",
-          left: "-1000px",
-          width: "99999px",
-          height: "99999px",
-        }}
-        onMouseUp={(e) => {
-          console.log("hits huge div", e);
-          setResizing(false);
-        }}
-      ></div> */}
       <div>
         <div>
           <div
@@ -145,20 +122,18 @@ export default function HeaderComp({ headerProps }) {
             />
           </div>
         </div>
-        {headerGroups.map((headerGroup, hg_idx) => (
-          <DragDropContext
-            key={hg_idx}
-            onDragStart={handleDragStart}
-            onDragUpdate={handleDragUpdate}
-          >
-            <Droppable droppableId="droppable" direction="horizontal">
+        {headerGroups.map((headerGroup, hg_idx) => {
+          // only use secondary headers
+          return hg_idx === 0 ? null : (
+            <Droppable
+              key={hg_idx}
+              droppableId="droppable"
+              direction="horizontal"
+            >
               {(droppableProvided, snapshot) => (
                 <div
                   {...headerGroup.getHeaderGroupProps()}
                   ref={droppableProvided.innerRef}
-                  // below doesn't work because we have a single dropzone - I was attempting to highlight individual drop zones. It is possible, but a lot more work and not worth it at this point
-                  // className={`row header-group
-                  // ${snapshot.isDraggingOver ? "current-dropzone" : ""}`}
                   className={`row header-group ${
                     hg_idx === 1 ? "header-group-search" : ""
                   }`}
@@ -172,55 +147,46 @@ export default function HeaderComp({ headerProps }) {
                     const props = column.getHeaderProps(
                       column.getSortByToggleProps()
                     );
-
                     return (
                       <Draggable
                         key={column.id}
-                        draggableId={column.id}
+                        draggableId={hg_idx === 1 ? column.id : null}
                         index={col_idx}
+                        // only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
                         isDragDisabled={
+                          hg_idx === 0 ||
                           !(column.accessor && !column.isResizing && !resizing)
                         }
-                        // isDragDisabled={true}
+                        onDragEnd={(e) => {
+                          console.log(
+                            "drag end event from draggable - remove?: ",
+                            e
+                          );
+                          handleDragEnd();
+                        }}
                       >
-                        {(provided, snapshot) => {
-                          // console.log(column.getHeaderProps());
-                          // const {
-                          //   style,
-                          //   ...extraProps
-                          // } = column.getHeaderProps();
-                          // console.log(style, extraProps);
-                          const dragProps = resizing
-                            ? null
-                            : {
-                                ...provided.draggableProps,
-                                ...provided.dragHandleProps,
-                              };
+                        {(draggableProvided, snapshot) => {
                           const heading = column.render("Header");
                           return (
                             <>
-                              {provided.placeHolder}
+                              {/* {draggableProvided.placeHolder} */}
                               <div
                                 {...props}
                                 className={`cell header`}
-                                ref={provided.innerRef}
-                                {...dragProps}
+                                ref={draggableProvided.innerRef}
+                                // {...dragProps}
+                                {...draggableProvided.draggableProps}
+                                {...draggableProvided.dragHandleProps}
                                 style={{
                                   ...getItemStyle(
                                     snapshot,
-                                    provided.draggableProps.style,
+                                    draggableProvided.draggableProps.style,
                                     column
                                   ),
                                   ...props.style,
                                 }}
                                 // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
                                 onClick={null}
-                                // !!! move to higher component
-                                onMouseUp={(e) => {
-                                  console.log(e);
-                                  console.log(e.target);
-                                  console.log(e.target.style);
-                                }}
                               >
                                 <div
                                   className={`sortable ${
@@ -237,10 +203,17 @@ export default function HeaderComp({ headerProps }) {
                                     //   "e.target from click",
                                     //   e.target
                                     // );
+                                    // !!! isDragging is not updating properly - onDragEnd not being called?
+                                    console.log(
+                                      "isdraggin?",
+                                      snapshot.isDragging,
+                                      snapshot
+                                    );
                                     if (
                                       typeof props.onClick === "function" &&
                                       !resizing &&
-                                      e.target.id !== "resizer"
+                                      e.target.id !== "resizer" &&
+                                      !snapshot.isDragging
                                     ) {
                                       props.onClick(e);
                                     }
@@ -249,7 +222,7 @@ export default function HeaderComp({ headerProps }) {
                                   }}
                                 >
                                   {heading}
-                                  {/* conditional rendering of resizing tab */}
+                                  {/* conditional rendering of resizing tab - unnecessary if we only render secondary headings*/}
                                   {typeof heading === "string" ? (
                                     <div
                                       id="resizer"
@@ -301,8 +274,9 @@ export default function HeaderComp({ headerProps }) {
                 </div>
               )}
             </Droppable>
-          </DragDropContext>
-        ))}
+            // </DragDropContext>
+          );
+        })}
       </div>
     </>
   );
