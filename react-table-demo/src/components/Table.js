@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import {
   useTable,
   useColumnOrder,
@@ -9,6 +9,7 @@ import {
   useGlobalFilter,
   useSortBy,
 } from "react-table";
+import { DragDropContext } from "react-beautiful-dnd";
 import { DefaultColumnFilter } from "./Filters";
 import Header from "./Header";
 import Body from "./Body";
@@ -104,13 +105,55 @@ export default function Table({ columns, data }) {
     canNextPage,
   };
 
+  const currentColOrder = useRef();
+  const handleDragStart = (dragStartObj) => {
+    // console.log(allColumns[dragStartObj.source.index].isResizing);
+    // only change order if column is NOT being resized
+    console.log("hits handle drag start");
+    if (!allColumns[dragStartObj.source.index].isResizing) {
+      // && !resizing) {
+      currentColOrder.current = allColumns.map((o) => o.id);
+    }
+  };
+
+  const handleDragUpdate = (dragUpdateObj, b) => {
+    // console.log(dragUpdateObj, b);
+    console.log("hits handle drag update");
+    if (!allColumns[dragUpdateObj.source.index].isResizing) {
+      // && !resizing) {
+      const colOrder = [...currentColOrder.current];
+      const sIndex = dragUpdateObj.source.index;
+      const dIndex =
+        dragUpdateObj.destination && dragUpdateObj.destination.index;
+      if (typeof sIndex === "number" && typeof dIndex === "number") {
+        colOrder.splice(sIndex, 1);
+        colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
+        setColumnOrder(colOrder);
+      }
+    }
+    // wiggleScreen();
+  };
+
   return (
     <>
-      <div {...getTableProps()} className="table">
-        <Header headerProps={headerProps} />
-        <Body bodyProps={bodyProps} />
-      </div>
-      <Pagination paginationProps={paginationProps} />
+      <DragDropContext
+        // key={hg_idx}
+        onDragStart={handleDragStart}
+        onDragUpdate={handleDragUpdate}
+        onDragEnd={(e) => {
+          console.log("drag end event from dragdropcontext: ", e);
+          // handleDragEnd(e);
+        }}
+        // // onDragEnd={(e) => {
+        // //   console.log("drag end event: ", e);
+        // // }}
+      >
+        <div {...getTableProps()} className="table">
+          <Header headerProps={headerProps} />
+          <Body bodyProps={bodyProps} />
+        </div>
+        <Pagination paginationProps={paginationProps} />
+      </DragDropContext>
     </>
   );
 }

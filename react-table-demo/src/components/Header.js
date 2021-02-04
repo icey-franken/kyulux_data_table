@@ -11,8 +11,9 @@ export default function HeaderComp({ headerProps }) {
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
-  } = headerProps;
-  const currentColOrder = useRef();
+	} = headerProps;
+	// !!! uncomment after app test
+  // const currentColOrder = useRef();
   const [resizing, setResizing] = useState(false);
   // useEffect(() => {
   // 	console.log('hits use effect. Resizing: ', resizing)
@@ -27,7 +28,7 @@ export default function HeaderComp({ headerProps }) {
     window.scrollTo({ top: 100, behavior: "auto" });
     window.scrollTo({ top: 0, behavior: "auto" });
     const tableEl = document.querySelector(".table");
-    console.log('wiggles');
+    console.log("wiggles");
     if (tableEl) {
       tableEl.scrollTo({ left: 100, behavior: "auto" });
       tableEl.scrollTo({ left: 0, behavior: "auto" });
@@ -114,31 +115,31 @@ export default function HeaderComp({ headerProps }) {
   // });
   // ---------------------------------------
 
-  const handleDragStart = (dragStartObj) => {
-    // console.log(allColumns[dragStartObj.source.index].isResizing);
-    // only change order if column is NOT being resized
-    console.log("hits handle drag start");
-    if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
-      currentColOrder.current = allColumns.map((o) => o.id);
-    }
-  };
+  // const handleDragStart = (dragStartObj) => {
+  //   // console.log(allColumns[dragStartObj.source.index].isResizing);
+  //   // only change order if column is NOT being resized
+  //   console.log("hits handle drag start");
+  //   if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
+  //     currentColOrder.current = allColumns.map((o) => o.id);
+  //   }
+  // };
 
-  const handleDragUpdate = (dragUpdateObj, b) => {
-    // console.log(dragUpdateObj, b);
-    console.log("hits handle drag update");
-    if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
-      const colOrder = [...currentColOrder.current];
-      const sIndex = dragUpdateObj.source.index;
-      const dIndex =
-        dragUpdateObj.destination && dragUpdateObj.destination.index;
-      if (typeof sIndex === "number" && typeof dIndex === "number") {
-        colOrder.splice(sIndex, 1);
-        colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-        setColumnOrder(colOrder);
-      }
-    }
-    // wiggleScreen();
-  };
+  // const handleDragUpdate = (dragUpdateObj, b) => {
+  //   // console.log(dragUpdateObj, b);
+  //   console.log("hits handle drag update");
+  //   if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
+  //     const colOrder = [...currentColOrder.current];
+  //     const sIndex = dragUpdateObj.source.index;
+  //     const dIndex =
+  //       dragUpdateObj.destination && dragUpdateObj.destination.index;
+  //     if (typeof sIndex === "number" && typeof dIndex === "number") {
+  //       colOrder.splice(sIndex, 1);
+  //       colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
+  //       setColumnOrder(colOrder);
+  //     }
+  //   }
+  //   // wiggleScreen();
+  // };
   const handleDragEnd = (e) => {
     // console.log("hits handle drag end in draggable - e: ", e);
     // wiggleScreen();
@@ -147,7 +148,7 @@ export default function HeaderComp({ headerProps }) {
       wiggleScreen();
     }, 1);
   };
-  document.onMouseUp = wiggleScreen();
+
   return (
     <>
       {/* idea is to have a parent element that covers entire screen with mouseup event handler - to ensure resizing doesn't get stuck on true if user moves mouse before unclicking */}
@@ -168,15 +169,17 @@ export default function HeaderComp({ headerProps }) {
         }}
       ></div> */}
       <div
-        onMouseUp={(e) => {
-          console.log(
-            "drag end event from onMouseUp: ",
-            e,
-            e.target,
-            e.currentTarget
-          );
-          handleDragEnd(e);
-        }}
+        // handleDragEnd here to take care of the case where user moves mouse out of drag drop context
+        onMouseUp={handleDragEnd}
+        // (e) => {
+        //   console.log(
+        //     "drag end event from onMouseUp: ",
+        //     e,
+        //     e.target,
+        //     e.currentTarget
+        //   );
+        //   handleDragEnd(e);
+        // }}
       >
         <div>
           <div
@@ -192,20 +195,30 @@ export default function HeaderComp({ headerProps }) {
             />
           </div>
         </div>
-        {headerGroups.map((headerGroup, hg_idx) => (
-          <DragDropContext
-            key={hg_idx}
-            onDragStart={handleDragStart}
-            onDragUpdate={handleDragUpdate}
-            // onDragEnd={(e) => {
-            //   console.log("drag end event from dragdropcontext: ", e);
-            //   // handleDragEnd(e);
-            // }}
-            // // onDragEnd={(e) => {
-            // //   console.log("drag end event: ", e);
-            // // }}
-          >
-            <Droppable droppableId="droppable" direction="horizontal">
+        {headerGroups.map((headerGroup, hg_idx) => {
+					console.log(hg_idx)
+					if(hg_idx ===0){
+						return null
+					}
+					return(
+          // <DragDropContext
+          //   // key={hg_idx}
+          //   onDragStart={handleDragStart}
+          //   onDragUpdate={handleDragUpdate}
+          //   // onDragEnd={(e) => {
+          //   //   console.log("drag end event from dragdropcontext: ", e);
+          //   //   // handleDragEnd(e);
+          //   // }}
+          //   // // onDragEnd={(e) => {
+          //   // //   console.log("drag end event: ", e);
+          //   // // }}
+          // >
+            <Droppable
+							// !!! remove after app test
+							key={hg_idx}
+              droppableId="droppable"
+              direction="horizontal"
+            >
               {(droppableProvided, snapshot) => (
                 <div
                   {...headerGroup.getHeaderGroupProps()}
@@ -229,7 +242,7 @@ export default function HeaderComp({ headerProps }) {
                     return (
                       <Draggable
                         key={column.id}
-                        draggableId={column.id}
+                        draggableId={hg_idx===1?column.id:null}
                         index={col_idx}
                         // only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
                         isDragDisabled={
@@ -385,8 +398,8 @@ export default function HeaderComp({ headerProps }) {
                 </div>
               )}
             </Droppable>
-          </DragDropContext>
-        ))}
+          // </DragDropContext>
+        )})}
       </div>
     </>
   );
