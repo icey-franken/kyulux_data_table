@@ -29,11 +29,16 @@
   text-align: center;
 }
 
+body{
+	/* overflow-x: scroll; */
+  /* overflow-y: scroll; */
+}
+
 .table {
   /* border: 1px solid #000; */
   /* max-width: 700px; */
-  overflow-x: auto;
-  /* overflow-x: hidden; */
+	overflow-x: auto;
+  /* overflow-y: scroll; */
   margin-bottom: 25px;
 }
 

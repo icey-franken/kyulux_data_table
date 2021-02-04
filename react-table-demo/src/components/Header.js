@@ -22,11 +22,16 @@ export default function HeaderComp({ headerProps }) {
   // }, [resizing]);
   // ---------------------------------------
 
-  // there are styling conflicts with dnd and other components - one way to reset these is to slightly wiggle the screen. This function does that, without the user noticing anything.
+  // there are styling conflicts with dnd and other components - one way to reset these is to slightly wiggle the screen. This function does that, without the user noticing anything. NOTE: this ONLY works if the screen is scrollable.
   const wiggleScreen = () => {
     window.scrollTo({ top: 100, behavior: "auto" });
     window.scrollTo({ top: 0, behavior: "auto" });
-    console.log("screen wiggled");
+    const tableEl = document.querySelector(".table");
+    console.log('wiggles');
+    if (tableEl) {
+      tableEl.scrollTo({ left: 100, behavior: "auto" });
+      tableEl.scrollTo({ left: 0, behavior: "auto" });
+    }
   };
 
   const getItemStyle = (snapshot, draggableStyle, column) => {
@@ -132,6 +137,7 @@ export default function HeaderComp({ headerProps }) {
         setColumnOrder(colOrder);
       }
     }
+    // wiggleScreen();
   };
   const handleDragEnd = (e) => {
     // console.log("hits handle drag end in draggable - e: ", e);
@@ -141,7 +147,7 @@ export default function HeaderComp({ headerProps }) {
       wiggleScreen();
     }, 1);
   };
-
+  document.onMouseUp = wiggleScreen();
   return (
     <>
       {/* idea is to have a parent element that covers entire screen with mouseup event handler - to ensure resizing doesn't get stuck on true if user moves mouse before unclicking */}
@@ -191,13 +197,13 @@ export default function HeaderComp({ headerProps }) {
             key={hg_idx}
             onDragStart={handleDragStart}
             onDragUpdate={handleDragUpdate}
-            onDragEnd={(e) => {
-              console.log("drag end event from dragdropcontext: ", e);
-              // handleDragEnd(e);
-            }}
             // onDragEnd={(e) => {
-            //   console.log("drag end event: ", e);
+            //   console.log("drag end event from dragdropcontext: ", e);
+            //   // handleDragEnd(e);
             // }}
+            // // onDragEnd={(e) => {
+            // //   console.log("drag end event: ", e);
+            // // }}
           >
             <Droppable droppableId="droppable" direction="horizontal">
               {(droppableProvided, snapshot) => (

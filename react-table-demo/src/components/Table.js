@@ -64,7 +64,7 @@ export default function Table({ columns, data }) {
     {
       columns,
       data,
-      initialState: { pageSize: 10 },
+      initialState: { pageSize: 30 },
       autoResetPage: false,
       defaultColumn,
       filterTypes,
