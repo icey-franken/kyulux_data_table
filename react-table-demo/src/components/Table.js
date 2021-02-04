@@ -79,33 +79,32 @@ export default function Table({ columns, data }) {
     usePagination
   );
 
-  // prepare props for main components - consider implementing table context
-  const headerProps = {
-    setColumnOrder,
-    headerGroups,
-    allColumns,
-    visibleColumns,
-    preGlobalFilteredRows,
-    globalFilter: state.globalFilter,
-    setGlobalFilter,
-  };
-
-  const bodyProps = { getTableBodyProps, prepareRow, page };
-
-  const paginationProps = {
-    pageIndex: state.pageIndex,
-    pageSize: state.pageSize,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    previousPage,
-    nextPage,
-    setPageSize,
-    canPreviousPage,
-    canNextPage,
-  };
-
   const currentColOrder = useRef();
+
+  // there are styling conflicts with dnd and other components - one way to reset these is to slightly wiggle the screen. This function does that, without the user noticing anything. NOTE: this ONLY works if the screen is scrollable.
+  const wiggleScreen = () => {
+    // we don't care about wiggle room for window - we want to be at the top anyways. This will change once I get the sticky header working.
+    window.scrollBy(1, 1);
+    window.scrollBy(-1, -1);
+
+    // window.scrollTo({ top: 100, behavior: "auto" });
+    // window.scrollTo({ top: 0, behavior: "auto" });
+    console.log("wiggles");
+    const tableEl = document.querySelector(".table");
+    if (tableEl) {
+      // ensure that there is "room to wiggle" for table
+      if (tableEl.scrollLeft === 0) {
+        tableEl.scrollBy(1, 1);
+        tableEl.scrollBy(-1, -1);
+      } else {
+        tableEl.scrollBy(-1, -1);
+        tableEl.scrollBy(1, 1);
+      }
+      // tableEl.scrollTo({ left: 100, behavior: "auto" });
+      // tableEl.scrollTo({ left: 10, behavior: "auto" });
+    }
+  };
+
   const handleDragStart = (dragStartObj) => {
     // console.log(allColumns[dragStartObj.source.index].isResizing);
     // only change order if column is NOT being resized
@@ -133,22 +132,53 @@ export default function Table({ columns, data }) {
     }
     // wiggleScreen();
   };
+  const handleDragEnd = (e) => {
+    // console.log("hits handle drag end in draggable - e: ", e);
+    // wiggleScreen();
+    setTimeout(() => {
+      console.log("timeout runs");
+      wiggleScreen();
+    }, 1);
+  };
+
+  // prepare props for main components - consider implementing table context
+  const headerProps = {
+    setColumnOrder,
+    headerGroups,
+    allColumns,
+    visibleColumns,
+    preGlobalFilteredRows,
+    globalFilter: state.globalFilter,
+    setGlobalFilter,
+    wiggleScreen,
+    handleDragEnd,
+  };
+  const bodyProps = { getTableBodyProps, prepareRow, page };
+
+  const paginationProps = {
+    pageIndex: state.pageIndex,
+    pageSize: state.pageSize,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    previousPage,
+    nextPage,
+    setPageSize,
+    canPreviousPage,
+    canNextPage,
+  };
 
   return (
     <>
       <DragDropContext
-        // key={hg_idx}
         onDragStart={handleDragStart}
         onDragUpdate={handleDragUpdate}
         onDragEnd={(e) => {
           console.log("drag end event from dragdropcontext: ", e);
-          // handleDragEnd(e);
+          handleDragEnd();
         }}
-        // // onDragEnd={(e) => {
-        // //   console.log("drag end event: ", e);
-        // // }}
       >
-        <div {...getTableProps()} className="table">
+        <div {...getTableProps()} onMouseUp={handleDragEnd} className="table">
           <Header headerProps={headerProps} />
           <Body bodyProps={bodyProps} />
         </div>

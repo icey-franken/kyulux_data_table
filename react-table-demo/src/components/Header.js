@@ -11,8 +11,10 @@ export default function HeaderComp({ headerProps }) {
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
-	} = headerProps;
-	// !!! uncomment after app test
+    wiggleScreen,
+    handleDragEnd,
+  } = headerProps;
+  // !!! uncomment after app test
   // const currentColOrder = useRef();
   const [resizing, setResizing] = useState(false);
   // useEffect(() => {
@@ -22,18 +24,6 @@ export default function HeaderComp({ headerProps }) {
   //   }
   // }, [resizing]);
   // ---------------------------------------
-
-  // there are styling conflicts with dnd and other components - one way to reset these is to slightly wiggle the screen. This function does that, without the user noticing anything. NOTE: this ONLY works if the screen is scrollable.
-  const wiggleScreen = () => {
-    window.scrollTo({ top: 100, behavior: "auto" });
-    window.scrollTo({ top: 0, behavior: "auto" });
-    const tableEl = document.querySelector(".table");
-    console.log("wiggles");
-    if (tableEl) {
-      tableEl.scrollTo({ left: 100, behavior: "auto" });
-      tableEl.scrollTo({ left: 0, behavior: "auto" });
-    }
-  };
 
   const getItemStyle = (snapshot, draggableStyle, column) => {
     // wiggleScreen();
@@ -115,72 +105,9 @@ export default function HeaderComp({ headerProps }) {
   // });
   // ---------------------------------------
 
-  // const handleDragStart = (dragStartObj) => {
-  //   // console.log(allColumns[dragStartObj.source.index].isResizing);
-  //   // only change order if column is NOT being resized
-  //   console.log("hits handle drag start");
-  //   if (!allColumns[dragStartObj.source.index].isResizing && !resizing) {
-  //     currentColOrder.current = allColumns.map((o) => o.id);
-  //   }
-  // };
-
-  // const handleDragUpdate = (dragUpdateObj, b) => {
-  //   // console.log(dragUpdateObj, b);
-  //   console.log("hits handle drag update");
-  //   if (!allColumns[dragUpdateObj.source.index].isResizing && !resizing) {
-  //     const colOrder = [...currentColOrder.current];
-  //     const sIndex = dragUpdateObj.source.index;
-  //     const dIndex =
-  //       dragUpdateObj.destination && dragUpdateObj.destination.index;
-  //     if (typeof sIndex === "number" && typeof dIndex === "number") {
-  //       colOrder.splice(sIndex, 1);
-  //       colOrder.splice(dIndex, 0, dragUpdateObj.draggableId);
-  //       setColumnOrder(colOrder);
-  //     }
-  //   }
-  //   // wiggleScreen();
-  // };
-  const handleDragEnd = (e) => {
-    // console.log("hits handle drag end in draggable - e: ", e);
-    // wiggleScreen();
-    setTimeout(() => {
-      console.log("timeout runs");
-      wiggleScreen();
-    }, 1);
-  };
-
   return (
     <>
-      {/* idea is to have a parent element that covers entire screen with mouseup event handler - to ensure resizing doesn't get stuck on true if user moves mouse before unclicking */}
-      {/* <div
-        style={{
-          visibility: "hidden",
-          zIndex: "-5",
-          backgroundColor: "rgba(0,0,200,0.4)",
-          position: "absolute",
-          top: "-1000px",
-          left: "-1000px",
-          width: "99999px",
-          height: "99999px",
-        }}
-        onMouseUp={(e) => {
-          console.log("hits huge div", e);
-          setResizing(false);
-        }}
-      ></div> */}
-      <div
-        // handleDragEnd here to take care of the case where user moves mouse out of drag drop context
-        onMouseUp={handleDragEnd}
-        // (e) => {
-        //   console.log(
-        //     "drag end event from onMouseUp: ",
-        //     e,
-        //     e.target,
-        //     e.currentTarget
-        //   );
-        //   handleDragEnd(e);
-        // }}
-      >
+      <div>
         <div>
           <div
             colSpan={visibleColumns.length}
@@ -196,26 +123,10 @@ export default function HeaderComp({ headerProps }) {
           </div>
         </div>
         {headerGroups.map((headerGroup, hg_idx) => {
-					console.log(hg_idx)
-					if(hg_idx ===0){
-						return null
-					}
-					return(
-          // <DragDropContext
-          //   // key={hg_idx}
-          //   onDragStart={handleDragStart}
-          //   onDragUpdate={handleDragUpdate}
-          //   // onDragEnd={(e) => {
-          //   //   console.log("drag end event from dragdropcontext: ", e);
-          //   //   // handleDragEnd(e);
-          //   // }}
-          //   // // onDragEnd={(e) => {
-          //   // //   console.log("drag end event: ", e);
-          //   // // }}
-          // >
+          // only use secondary headers
+          return hg_idx === 0 ? null : (
             <Droppable
-							// !!! remove after app test
-							key={hg_idx}
+              key={hg_idx}
               droppableId="droppable"
               direction="horizontal"
             >
@@ -223,9 +134,6 @@ export default function HeaderComp({ headerProps }) {
                 <div
                   {...headerGroup.getHeaderGroupProps()}
                   ref={droppableProvided.innerRef}
-                  // below doesn't work because we have a single dropzone - I was attempting to highlight individual drop zones. It is possible, but a lot more work and not worth it at this point
-                  // className={`row header-group
-                  // ${snapshot.isDraggingOver ? "current-dropzone" : ""}`}
                   className={`row header-group ${
                     hg_idx === 1 ? "header-group-search" : ""
                   }`}
@@ -242,7 +150,7 @@ export default function HeaderComp({ headerProps }) {
                     return (
                       <Draggable
                         key={column.id}
-                        draggableId={hg_idx===1?column.id:null}
+                        draggableId={hg_idx === 1 ? column.id : null}
                         index={col_idx}
                         // only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
                         isDragDisabled={
@@ -250,41 +158,15 @@ export default function HeaderComp({ headerProps }) {
                           !(column.accessor && !column.isResizing && !resizing)
                         }
                         onDragEnd={(e) => {
-                          console.log("drag end event from draggable: ", e);
-                          handleDragEnd(e);
+                          console.log(
+                            "drag end event from draggable - remove?: ",
+                            e
+                          );
+                          handleDragEnd();
                         }}
                       >
                         {(draggableProvided, snapshot) => {
-                          // console.log(column.getHeaderProps());
-                          // const {
-                          //   style,
-                          //   ...extraProps
-                          // } = column.getHeaderProps();
-                          // console.log(style, extraProps);
-                          const dragProps = resizing
-                            ? null
-                            : {
-                                ...draggableProvided.draggableProps,
-                                ...draggableProvided.dragHandleProps,
-                              };
                           const heading = column.render("Header");
-                          // draggableProvided.draggableProps.onTransitionEnd = (
-                          //   e
-                          // ) => {
-                          //   console.log(
-                          //     "on transition end event: ",
-                          //     e,
-                          //     "target",
-                          //     e.target
-                          //   );
-                          // };
-                          // console.log(
-                          //   "draggableProvided:",
-                          //   draggableProvided,
-                          //   "snapshot: ",
-                          //   snapshot
-                          // );
-                          // console.log("drag props: ", dragProps);
                           return (
                             <>
                               {/* {draggableProvided.placeHolder} */}
@@ -305,12 +187,6 @@ export default function HeaderComp({ headerProps }) {
                                 }}
                                 // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
                                 onClick={null}
-                                // !!! move to higher component
-                                onMouseUp={(e) => {
-                                  // console.log(e);
-                                  // console.log(e.target);
-                                  // console.log(e.target.style);
-                                }}
                               >
                                 <div
                                   className={`sortable ${
@@ -346,7 +222,7 @@ export default function HeaderComp({ headerProps }) {
                                   }}
                                 >
                                   {heading}
-                                  {/* conditional rendering of resizing tab */}
+                                  {/* conditional rendering of resizing tab - unnecessary if we only render secondary headings*/}
                                   {typeof heading === "string" ? (
                                     <div
                                       id="resizer"
@@ -398,8 +274,9 @@ export default function HeaderComp({ headerProps }) {
                 </div>
               )}
             </Droppable>
-          // </DragDropContext>
-        )})}
+            // </DragDropContext>
+          );
+        })}
       </div>
     </>
   );
