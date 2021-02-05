@@ -33,9 +33,9 @@ The objective of this project was to build an interactive, dynamic table using d
 ## Main Features
 
 A variety of features were provided to maximize table functionality. Features include:
-* dynamic single-column filtering via simple keyword search present below each column heading 
-* dynamic dataset filtering via keyword search at top of page
-* single-column sorting via clicking header
+* dynamic single-column filtering via keyword search (located below each column heading) 
+* dynamic dataset filtering via keyword search (located at top of page)
+* single-column sorting via clicking column header
 * multi-column sorting via holding shift while clicking column headers
 * column reordering via dragging column header to desired location
 * column resizing via clicking and dragging tab on right side of column header
