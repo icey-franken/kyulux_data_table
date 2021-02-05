@@ -1,4 +1,4 @@
-# kyulux_data_table
+# Kyulux Data Table
 
 ## Objectives
 
