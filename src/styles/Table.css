@@ -67,9 +67,16 @@ body {
   /* display: inline-block; */
 }
 
-.header__info-popup {
+.header__info-popup-container {
   font-size: 30px;
   padding: 0 8px;
+}
+.header__info-popup-button{
+	margin-bottom: 2px;
+	height: fit-content;
+}
+.header__info-popup-button:hover{
+	cursor: pointer;
 }
 
 .rows {
