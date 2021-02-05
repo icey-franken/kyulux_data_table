@@ -36,7 +36,7 @@ git clone https://github.com/icey-franken/kyulux_data_table.git
 2. CD into project directory
 
 ```bash
-cd kyulux_data_table/react-table-demo
+cd kyulux_data_table
 ```
 
 3. Install project packages
