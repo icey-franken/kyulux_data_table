@@ -1,9 +1,0 @@
-.sorting-modal{
-	position: absolute;
-	z-index: 3;
-	width: viewport;
-	height: 100%;
-	background-color: rgba(245,245,245,0.75);
-	margin: 0!important;
-	padding: 0!important;
-}

@@ -3,17 +3,13 @@ import React, { useState } from "react";
 export default function InfoPopup() {
   const [showPopup, setShowPopup] = useState(true);
 
-  const handleClick = () => {
-    console.log("hits");
-    setShowPopup(true);
-  };
   return (
     <>
       <div className="header__info-popup-container">
         <div
           className="header__info-popup-button"
           title="Table Info"
-          onClick={handleClick}
+          onClick={() => setShowPopup(true)}
         >
           &#x1F6C8;
         </div>
@@ -24,17 +20,16 @@ export default function InfoPopup() {
 }
 
 function Popup({ showPopup, setShowPopup }) {
-  const handleClick = () => {
-    setShowPopup(false);
-  };
   const listItems = [
     "Sort results based on a single column by clicking on a column header. Click again to reverse sort order; again to remove column sorting.",
     "Sort results based on multiple columns by holding shift while clicking column headers. Primary column sort is first column sorted; secondary column sort is second column sorted; etc.",
     "Reorder columns by dragging column header",
     "Resize columns by adjusting tab on right side of column header",
     "Search a single column using input box below column header.",
-    "Search entire dataset using input box at top of table.",
+		"Search entire dataset using input box at top of table.",
+		"NOTE: reorder columns BEFORE sorting/searching columns for improved performance."
   ];
+
   return (
     <div className={`popup ${showPopup ? "show-popup" : ""}`}>
       <div className="popup-content">
@@ -46,7 +41,10 @@ function Popup({ showPopup, setShowPopup }) {
             </li>
           ))}
         </ul>
-        <div className="popup__close-button" onClick={handleClick}>
+        <div
+          className="popup__close-button"
+          onClick={() => setShowPopup(false)}
+        >
           Got it!
         </div>
       </div>

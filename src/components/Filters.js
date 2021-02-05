@@ -20,7 +20,7 @@ export const GlobalFilter = ({
 }) => {
   const count = preGlobalFilteredRows && preGlobalFilteredRows.length;
   return (
-    <div className='header__global-search'>
+    <div className="header__global-search">
       Search:{" "}
       <input
         value={globalFilter || ""}
@@ -28,9 +28,6 @@ export const GlobalFilter = ({
           setGlobalFilter(e.target.value || undefined);
         }}
         placeholder={`Search ${count} records...`}
-        style={{
-          // border: "0",
-        }}
       />
     </div>
   );

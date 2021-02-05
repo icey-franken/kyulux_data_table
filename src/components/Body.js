@@ -5,7 +5,7 @@ export default function Body({ bodyProps }) {
 
   return (
     <div className="rows" {...getTableBodyProps()}>
-      {page.map((row, i) => {
+      {page.map((row, index) => {
         prepareRow(row);
         const props = row.getRowProps();
         return (
@@ -14,11 +14,11 @@ export default function Body({ bodyProps }) {
             style={{
               ...props.style,
               backgroundColor: `${
-                i % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
+                index % 2 === 0 ? "rgba(0,0,0,0.05)" : "rgba(0,0,0,0.2)"
               }`,
             }}
             className="row body"
-            key={i}
+            key={index}
           >
             {row.cells.map((cell, idx) => {
               return (

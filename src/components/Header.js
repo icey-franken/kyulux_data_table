@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import React, { useState } from "react";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 import { GlobalFilter } from "./Filters";
 import InfoPopup from "./InfoPopup";
 
@@ -10,7 +10,6 @@ export default function HeaderComp({ headerProps }) {
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
-    handleDragEnd,
   } = headerProps;
 
   const [resizing, setResizing] = useState(false);
