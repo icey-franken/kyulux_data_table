@@ -3,13 +3,12 @@ export const DefaultColumnFilter = ({ column }) => {
   const count = preFilteredRows.length;
   return (
     <input
-      size={column.width}
       value={filterValue || ""}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
       placeholder={`Search ${count} records...`}
-      style={{ textAlign: "left" }}
+      style={{ textAlign: "left", width: `${column.width}px` }}
     />
   );
 };
