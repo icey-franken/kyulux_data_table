@@ -18,11 +18,12 @@
   width: fit-content;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+	align-items: center;
+	height: 32px;
 }
 .header-group {
   font-weight: 600;
-  height: 70px;
+  height: 70px!important;
   background-color: lightgrey;
   white-space: nowrap;
   display: inline-block;

@@ -21,7 +21,7 @@ export const GlobalFilter = ({
   const count = preGlobalFilteredRows && preGlobalFilteredRows.length;
   return (
     <div className="header__global-search">
-      Search:{" "}
+      Search All Records:{" "}
       <input
         value={globalFilter || ""}
         onChange={(e) => {
