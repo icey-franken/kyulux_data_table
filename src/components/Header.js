@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { GlobalFilter } from "./Filters";
+import InfoPopup from './InfoPopup';
 
 export default function HeaderComp({ headerProps }) {
   const {
@@ -106,20 +107,20 @@ export default function HeaderComp({ headerProps }) {
   // ---------------------------------------
 
   return (
-    <div className='sticky-header'>
-      <div>
-        <div
-          colSpan={visibleColumns.length}
-          style={{
-            textAlign: "left",
-          }}
-        >
-          <GlobalFilter
-            preGlobalFilteredRows={preGlobalFilteredRows}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-          />
-        </div>
+    <div className="sticky-header header">
+      <div
+			className='header__top-row'
+        colSpan={visibleColumns.length}
+        style={{
+          textAlign: "left",
+        }}
+      >
+				<InfoPopup/>
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
       </div>
       {headerGroups.map((headerGroup, hg_idx) => {
         // only use secondary headers
