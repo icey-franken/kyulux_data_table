@@ -49,9 +49,9 @@ A variety of features were provided to maximize table functionality. Features in
 
 ### Technologies Used
 
-This application was built with React (v17) as its front-end framework via [create-react-app (v4)](https://github.com/facebook/create-react-app).
+This application was built with [React](https://github.com/facebook/react) (v17) as its front-end framework via [create-react-app](https://github.com/facebook/create-react-app) (v4).
 
-The table itself was constructed with [react-table (v7)](https://github.com/tannerlinsley/react-table) and integrated with [react-beautiful-dnd (v13)](https://github.com/atlassian/react-beautiful-dnd) for drag-and-drop functionality. 
+The table itself was constructed with [react-table](https://github.com/tannerlinsley/react-table) (v7) and integrated with [react-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd) (v13) for drag-and-drop functionality. 
 
 
 ## Future Considerations
