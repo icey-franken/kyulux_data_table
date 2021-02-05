@@ -32,7 +32,7 @@ export default function Table({ columns, data }) {
             ? String(rowValue)
                 .toLowerCase()
                 .includes(String(filterValue).toLowerCase())
-            : true;
+            : false;
         });
       },
     }),
