@@ -18,7 +18,7 @@ export default function HeaderComp({ headerProps }) {
   const getItemStyle = (
     { isDragging, isDropAnimating },
     draggableStyle,
-    { isResizing }
+    isResizing
   ) => {
     const itemStyle = isResizing
       ? { background: "grey" }
@@ -71,15 +71,9 @@ export default function HeaderComp({ headerProps }) {
               <div
                 {...headerGroup.getHeaderGroupProps()}
                 ref={droppableProvided.innerRef}
-                // className={`row header-group ${
-                // hg_idx === 1 ? "header-group-search" : ""
-                // }`}
                 className="row header-group"
                 // this prevents resizing being left as true - if user tries to drag and it doesn't work, release of click will set resizing to false and allow drag
-                onMouseUp={(e) => {
-                  // console.log("e from mouse up in parent: ", e);
-                  setResizing(false);
-                }}
+                onMouseUp={(e) => setResizing(false)}
               >
                 {headerGroup.headers.map((column, col_idx) => {
                   const props = column.getHeaderProps(
@@ -88,42 +82,31 @@ export default function HeaderComp({ headerProps }) {
                   return (
                     <Draggable
                       key={column.id}
-                      draggableId={hg_idx === 1 ? column.id : null}
+                      draggableId={column.id}
                       index={col_idx}
-                      // only allows dragging of second header row - adjust later to allow both rows to be dragged IFF you can get it to behave - consider using indexes instead of whatever you currently use
                       isDragDisabled={
-                        hg_idx === 0 ||
                         !(column.accessor && !column.isResizing && !resizing)
                       }
-                      onDragEnd={(e) => {
-                        console.log(
-                          "drag end event from draggable - remove?: ",
-                          e
-                        );
-                        handleDragEnd();
-                      }}
                     >
                       {(draggableProvided, snapshot) => {
                         const heading = column.render("Header");
                         return (
                           <>
-                            {/* {draggableProvided.placeHolder} */}
                             <div
                               {...props}
                               className={`cell header`}
                               ref={draggableProvided.innerRef}
-                              // {...dragProps}
                               {...draggableProvided.draggableProps}
                               {...draggableProvided.dragHandleProps}
                               style={{
                                 ...getItemStyle(
                                   snapshot,
                                   draggableProvided.draggableProps.style,
-                                  column
+                                  column.isResizing
                                 ),
                                 ...props.style,
                               }}
-                              // spreading props above spreads a click handler in here. We remove it by setting it to null. Click handler from props moved to div below so that clicking in search bar does not trigger a sort
+                              // negate click handler from {...props} above. Click handler from props moved to further nested div so that clicking in search bar does not trigger a sort
                               onClick={null}
                             >
                               <div
@@ -135,18 +118,8 @@ export default function HeaderComp({ headerProps }) {
                                     : ""
                                 }`}
                                 onClick={(e) => {
-                                  // check that column sort click handler exists before calling it - top row of headers do NOT have onClick - only second row
-                                  // resizing conditional and target id check prevents resorting while resizing
-                                  // console.log(
-                                  //   "e.target from click",
-                                  //   e.target
-                                  // );
-                                  // !!! isDragging is not updating properly - onDragEnd not being called?
-                                  console.log(
-                                    "isdraggin?",
-                                    snapshot.isDragging,
-                                    snapshot
-                                  );
+                                  // check that column sort click handler exists before sorting
+                                  // prevent resorting if resizing or dragging
                                   if (
                                     typeof props.onClick === "function" &&
                                     !resizing &&
@@ -155,48 +128,22 @@ export default function HeaderComp({ headerProps }) {
                                   ) {
                                     props.onClick(e);
                                   }
-                                  // TODO: add loading modal while sorting
-                                  // TODO: find a way to remove modal after sorting complete
                                 }}
                               >
                                 {heading}
-                                {/* conditional rendering of resizing tab - unnecessary if we only render secondary headings*/}
-                                {typeof heading === "string" ? (
-                                  <div
-                                    id="resizer"
-                                    {...column.getResizerProps()}
-                                    className={`resizer ${
-                                      column.isResizing ? "isResizing" : ""
-                                    }`}
-                                    onMouseDown={(e) => {
-                                      column.getResizerProps().onMouseDown(e);
-                                      // console.log(
-                                      //   "hits resizer down click. e: ",
-                                      //   e,
-                                      //   "target: ",
-                                      //   e.target
-                                      // );
-                                      // e.preventDefault();
-                                      setResizing(true);
-                                    }}
-                                    // not guaranteed to hit onMouseUp event...
-                                    // if we miss mouseup event, then resizing remains as true and drag disabled.
-                                    // band-aid solution is useEffect above with setTimeout
-                                    // moved this to parent element (header row) for greater chance of being hit.
-                                    // onMouseUp={(e) => {
-                                    //   console.log(
-                                    //     "hits resizer up click. e: ",
-                                    //     e,
-                                    //     "target: ",
-                                    //     e.target
-                                    //   );
-                                    //   setResizing(false);
-                                    //   e.preventDefault();
-                                    // }}
-                                  />
-                                ) : null}
+                                <div
+                                  id="resizer"
+                                  {...column.getResizerProps()}
+                                  className={`resizer ${
+                                    column.isResizing ? "isResizing" : ""
+                                  }`}
+                                  onMouseDown={(e) => {
+                                    column.getResizerProps().onMouseDown(e);
+                                    setResizing(true);
+                                  }}
+                                />
                               </div>
-                              {hg_idx === 1 && column.canFilter ? (
+                              {column.canFilter ? (
                                 <div className="filter">
                                   {column.render("Filter")}
                                 </div>
@@ -212,7 +159,6 @@ export default function HeaderComp({ headerProps }) {
               </div>
             )}
           </Droppable>
-          // </DragDropContext>
         );
       })}
     </div>
