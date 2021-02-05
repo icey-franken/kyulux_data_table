@@ -1,121 +1,58 @@
 import React, { useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { GlobalFilter } from "./Filters";
-import InfoPopup from './InfoPopup';
+import InfoPopup from "./InfoPopup";
 
 export default function HeaderComp({ headerProps }) {
   const {
-    setColumnOrder,
     headerGroups,
-    allColumns,
     visibleColumns,
     preGlobalFilteredRows,
     globalFilter,
     setGlobalFilter,
-    wiggleScreen,
     handleDragEnd,
   } = headerProps;
-  // !!! uncomment after app test
-  // const currentColOrder = useRef();
+
   const [resizing, setResizing] = useState(false);
-  // useEffect(() => {
-  // 	console.log('hits use effect. Resizing: ', resizing)
-  // 	if (resizing) {
-  //     return setTimeout(setResizing(false), 5000);
-  //   }
-  // }, [resizing]);
-  // ---------------------------------------
 
-  const getItemStyle = (snapshot, draggableStyle, column) => {
-    // wiggleScreen();
-    // console.log("snapshot before: ", snapshot);
-    // if (column.Header==='Gender' && snapshot.isDropAnimating) {
-    // 	snapshot.isDragging = false;
-    // }
-    // console.log("snapshot after: ", snapshot);
-
-    const { isDragging, isDropAnimating } = snapshot;
-    const { isResizing } = column;
-    // console.log("isResizing?: ", isResizing);
-    // if (column.Header === "Gender") {
-    //   console.log(
-    //     "---------------get item style for Gender: \n",
-    //     "draggableStyle",
-    //     draggableStyle,
-    //     "isDragging",
-    //     isDragging,
-    //     "isDropAnimating",
-    //     isDropAnimating
-    //   );
-    // }
-    const posStyle =
-      isDragging && !isDropAnimating
-        ? {
-            position: "fixed",
-            top: "0px",
-            left: "0px",
-            borderRadius: "5px",
-          }
-        : {
-            position: "absolute",
-            background: "lightgrey",
-            top: "0px",
-            left: "0px",
-          };
-
+  const getItemStyle = (
+    { isDragging, isDropAnimating },
+    draggableStyle,
+    { isResizing }
+  ) => {
     const itemStyle = isResizing
       ? { background: "grey" }
       : {
-          // position: isDragging ? "absolute" : "relative",
-          // some basic styles to make the items look a bit nicer
           // prevent highlighting
           userSelect: "none",
           // change background colour if dragging
-          //TODO: add a delay to avoid quick switch to green when resizing
           background: isDragging ? "grey" : "initial",
-          // ...(!isDragging && { transform: "translate(0,0)" }),
-          // styles we need to apply on draggables
-
-          // suggested to move draggable style to the end so last applied
           ...draggableStyle,
           ...(isDropAnimating && { transitionDuration: "0.001s" }),
           pointerEvents: "auto",
           touchAction: "none",
           transform: null,
-          ...posStyle,
+          ...(isDragging && !isDropAnimating
+            ? {
+                position: "fixed",
+                top: "0px",
+                left: "0px",
+                borderRadius: "5px",
+              }
+            : {
+                position: "absolute",
+                background: "lightgrey",
+                top: "0px",
+                left: "0px",
+              }),
         };
-    // if (column.Header === "Gender") {
-    //   console.log("item style: ", itemStyle);
-    // }
     return itemStyle;
   };
 
-  // Original getItemStyle function
-  // const getItemStyle = ({ isDragging, isDropAnimating }, draggableStyle) => ({
-  //   ...draggableStyle,
-  //   // some basic styles to make the items look a bit nicer
-  //   userSelect: "none",
-
-  //   // change background colour if dragging
-  //   background: isDragging ? "lightgreen" : "grey",
-
-  //   ...(!isDragging && { transform: "translate(0,0)" }),
-  //   ...(isDropAnimating && { transitionDuration: "0.001s" }),
-
-  //   // styles we need to apply on draggables
-  // });
-  // ---------------------------------------
-
   return (
     <div className="sticky-header header">
-      <div
-			className='header__top-row'
-        colSpan={visibleColumns.length}
-        style={{
-          textAlign: "left",
-        }}
-      >
-				<InfoPopup/>
+      <div className="header__top-row" colSpan={visibleColumns.length}>
+        <InfoPopup />
         <GlobalFilter
           preGlobalFilteredRows={preGlobalFilteredRows}
           globalFilter={globalFilter}
@@ -134,9 +71,10 @@ export default function HeaderComp({ headerProps }) {
               <div
                 {...headerGroup.getHeaderGroupProps()}
                 ref={droppableProvided.innerRef}
-                className={`row header-group ${
-                  hg_idx === 1 ? "header-group-search" : ""
-                }`}
+                // className={`row header-group ${
+                // hg_idx === 1 ? "header-group-search" : ""
+                // }`}
+                className="row header-group"
                 // this prevents resizing being left as true - if user tries to drag and it doesn't work, release of click will set resizing to false and allow drag
                 onMouseUp={(e) => {
                   // console.log("e from mouse up in parent: ", e);
