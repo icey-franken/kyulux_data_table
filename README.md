@@ -28,7 +28,7 @@ npm start
 
 ## Objective
 
-The objective of this project was to build an interactive, dynamic table using data sourced from the Center for Food Safety and Applied Nutrition Adverse Event Reporting System (CAERS). Provided via openFDA, this data set includes information on adverse events and product complaint reports submitted to FDA for foods, dietary supplements, and cosmetics. More information about the API itself can be found here[https://open.fda.gov/apis/food/event/].
+The objective of this project was to build an interactive, dynamic table using data sourced from the Center for Food Safety and Applied Nutrition Adverse Event Reporting System (CAERS). Provided via openFDA, this data set includes information on adverse events and product complaint reports submitted to FDA for foods, dietary supplements, and cosmetics. More information about the API itself can be found [here](https://open.fda.gov/apis/food/event/).
 
 ## Main Features
 
@@ -49,9 +49,9 @@ A variety of features were provided to maximize table functionality. Features in
 
 ### Technologies Used
 
-This application was built with React (v17) as its front-end framework via (create-react-app (v4))[https://github.com/facebook/create-react-app]. 
+This application was built with React (v17) as its front-end framework via [create-react-app (v4)](https://github.com/facebook/create-react-app).
 
-The table itself was constructed with (react-table (v7))[https://github.com/tannerlinsley/react-table] and integrated with (react-beautiful-dnd (v13))[https://github.com/atlassian/react-beautiful-dnd] for drag-and-drop functionality. 
+The table itself was constructed with [react-table (v7)](https://github.com/tannerlinsley/react-table) and integrated with [react-beautiful-dnd (v13)](https://github.com/atlassian/react-beautiful-dnd) for drag-and-drop functionality. 
 
 
 ## Future Considerations
