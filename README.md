@@ -41,19 +41,9 @@ A variety of features were provided to maximize table functionality. Features in
 * column resizing via clicking and dragging tab on right side of column header
 * table pagination
 
-## Methods
-
-
-
-## Technical Details
-
-### Technologies Used
+## Technologies Used
 
 This application was built with [React](https://github.com/facebook/react) (v17) as its front-end framework via [create-react-app](https://github.com/facebook/create-react-app) (v4).
 
 The table itself was constructed with [react-table](https://github.com/tannerlinsley/react-table) (v7) and integrated with [react-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd) (v13) for drag-and-drop functionality. 
 
-
-## Future Considerations
-
-Hindsight is always 20-20. If I could do this again I would likely construct the table using react-virtualized instead of react-table due to it's increased performance with large datasets. 
