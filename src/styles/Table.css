@@ -1,3 +1,45 @@
+/* overall table styles */
+.table {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------- */
+/* header row styles */
+.sticky-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  background-color: white;
+  box-shadow: 0px 0px 5px 1px;
+  width: fit-content;
+}
+.header__top-row {
+  width: fit-content;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.header-group {
+  font-weight: 600;
+  height: 70px;
+  background-color: lightgrey;
+  white-space: nowrap;
+  display: inline-block;
+  line-height: 25px;
+}
+.header.cell {
+  height: 100%;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  overflow: hidden;
+  user-select: none;
+}
+.header.cell:focus {
+  outline: none;
+}
+
+/* header sort styles */
 .ascSort {
   border-top: 5px solid red !important;
 }
@@ -7,124 +49,21 @@
 .sortable {
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  height: 40px;
-  /* position: absolute; */
-}
-.pagination {
-  position: fixed;
-  /* position: sticky;  */
-  /* position: -webkit-sticky; */
-  bottom: 0px;
-  right: 0;
-  /* border: solid 1px blue; */
-  width: 100%;
-  background-color: rgba(211, 211, 211, 0.8);
-  height: 25px;
+  line-height: 24px;
 }
 
-/* padding: 1rem; */
-
-* {
-  box-sizing: border-box;
-  text-align: center;
-}
-
-body{
-	/* overflow-x: scroll; */
-  /* overflow-y: scroll; */
-}
-
-.table {
-  /* border: 1px solid #000; */
-  /* max-width: 700px; */
-	overflow-x: auto;
-  /* overflow-y: scroll; */
-  margin-bottom: 25px;
-}
-
-.header {
-  font-weight: 600;
-}
-
-.rows {
-  /* overflow-y: hidden;
-    overflow-x: hidden; */
-}
-
-.row {
-  /* border-bottom: 1px solid #000; */
-  height: 80px;
-}
-
-.row.body:last-child {
-  border: 0;
-}
-
-.header-group {
-  height: 40px;
-  /* 40px; */
-  background-color: lightgrey;
-  white-space: nowrap;
-  display: inline-block;
-  box-sizing: border-box;
-  line-height: 30px;
-  /* border: 1px solid green; */
-  /* margin: 10px!important; */
-}
-
-.header-group-search {
-  height: 80px !important;
-}
-
-.header.cell {
-  /* border: 1px solid green; */
-  height: 100%;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-	overflow: hidden;
-	user-select: none;
-}
-.header.cell:focus {
-  outline: none;
-}
-.current-dropzone {
-  opacity: 0.6;
-}
-.row.body:hover {
-	/* background-color: rgb(250, 100, 100) !important; */
-	transition-property: box-shadow;
-	transition-duration: 0.15s;
-	box-shadow: 0px 0px 10px 2px
-}
-.data-cell {
-	padding: 5px;
-}
-
-.cell {
-  height: 100%;
-  /* line-height: 31px; */
-  border-right: 1px solid #000;
-  /* padding-left: 5px; */
-  overflow-x: hidden;
-}
-
-.cell:last-child {
-  border-right: 0;
-}
-
+/* header resize styles */
 .resizer {
   display: inline-block;
   background: rgba(173, 216, 230, 0.7);
   width: 5px;
-  height: 40px;
+  height: 34px;
   position: absolute;
   right: 0;
   top: 0;
-  /* transform: translateX(5px); */
   z-index: 1;
   overflow-x: visible !important;
-  /* ${"" prevents from scrolling while dragging on touch devices} */
-  /* touch-action: none; */
+  touch-action: none;
   transition: width 0.5s;
 }
 .isResizing {
@@ -133,21 +72,65 @@ body{
 .resizer:hover {
   width: 10px;
   background: rgba(173, 216, 230, 1);
-
-  /* transform: translateX(0); */
 }
 
-/* !!! */
+/* header filter styles */
+.header__global-search {
+  font-weight: 600;
+}
 .filter {
-  /* width: 100%; */
-  /* width: 100px; */
   cursor: default;
-  /* height: 100%; */
-  /* border: 4px solid purple; */
-  box-sizing: border-box;
   z-index: 10;
   position: absolute;
   bottom: 0px;
-  /* border: 1px solid blue; */
 }
-/* -!!! */
+
+/* header info popup styles */
+.header__info-popup-container {
+  font-size: 30px;
+  padding: 0 8px;
+}
+.header__info-popup-button {
+  margin-bottom: 2px;
+  height: fit-content;
+}
+.header__info-popup-button:hover {
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------- */
+/* table body styles */
+.row {
+  height: 80px;
+}
+.row.body:last-child {
+  border: 0;
+}
+.row.body:hover {
+  transition-property: box-shadow;
+  transition-duration: 0.15s;
+  box-shadow: 0px 0px 10px 2px;
+}
+.data-cell {
+  padding: 5px;
+}
+.cell {
+  height: 100%;
+  border-right: 1px solid #000;
+  overflow-x: hidden;
+}
+.cell:last-child {
+  border-right: 0;
+}
+
+/* ---------------------------------------------------------- */
+/* pagination styles */
+.pagination {
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  background-color: rgba(211, 211, 211, 0.9);
+  height: 25px;
+  box-shadow: 0px 0px 5px 1px;
+  text-align: center;
+}

@@ -22,7 +22,7 @@ export default function Table({ columns, data }) {
     []
   );
 
-  // define our text filter
+  // define our basic text filter
   const filterTypes = useMemo(
     () => ({
       text: (rows, id, filterValue) => {
@@ -83,13 +83,8 @@ export default function Table({ columns, data }) {
 
   // there are styling conflicts with dnd and other components - one way to reset these is to slightly wiggle the screen. This function does that, without the user noticing anything. NOTE: this ONLY works if the screen is scrollable.
   const wiggleScreen = () => {
-    // we don't care about wiggle room for window - we want to be at the top anyways. This will change once I get the sticky header working.
     window.scrollBy(1, 1);
     window.scrollBy(-1, -1);
-
-    // window.scrollTo({ top: 100, behavior: "auto" });
-    // window.scrollTo({ top: 0, behavior: "auto" });
-    console.log("wiggles");
     const tableEl = document.querySelector(".table");
     if (tableEl) {
       // ensure that there is "room to wiggle" for table
@@ -100,26 +95,22 @@ export default function Table({ columns, data }) {
         tableEl.scrollBy(-1, -1);
         tableEl.scrollBy(1, 1);
       }
-      // tableEl.scrollTo({ left: 100, behavior: "auto" });
-      // tableEl.scrollTo({ left: 10, behavior: "auto" });
     }
   };
 
   const handleDragStart = (dragStartObj) => {
-    // console.log(allColumns[dragStartObj.source.index].isResizing);
-    // only change order if column is NOT being resized
-    console.log("hits handle drag start");
+    // only allow drag if not resizing
     if (!allColumns[dragStartObj.source.index].isResizing) {
-      // && !resizing) {
       currentColOrder.current = allColumns.map((o) => o.id);
     }
   };
 
   const handleDragUpdate = (dragUpdateObj, b) => {
-    // console.log(dragUpdateObj, b);
-    console.log("hits handle drag update");
-    if (!allColumns[dragUpdateObj.source.index].isResizing) {
-      // && !resizing) {
+    // only allow drag if not resizing. Also check that currentColOrder.current is an array, otherwise app will crash (bug).
+    if (
+      !allColumns[dragUpdateObj.source.index].isResizing &&
+      Array.isArray(currentColOrder.current)
+    ) {
       const colOrder = [...currentColOrder.current];
       const sIndex = dragUpdateObj.source.index;
       const dIndex =
@@ -130,18 +121,16 @@ export default function Table({ columns, data }) {
         setColumnOrder(colOrder);
       }
     }
-    // wiggleScreen();
-  };
-  const handleDragEnd = (e) => {
-    // console.log("hits handle drag end in draggable - e: ", e);
-    // wiggleScreen();
-    setTimeout(() => {
-      console.log("timeout runs");
-      wiggleScreen();
-    }, 1);
   };
 
-  // prepare props for main components - consider implementing table context
+  const handleDragEnd = (e) => {
+    // react-beautiful-dnd is buggy when integrated with react-table.
+    // slightly moving scroll position (wiggleScreen) fixes these styling bugs.
+    // wiggling screen asynchronously gives better results
+    setTimeout(() => wiggleScreen(), 1);
+  };
+
+  // prepare props for table components
   const headerProps = {
     setColumnOrder,
     headerGroups,
@@ -173,10 +162,7 @@ export default function Table({ columns, data }) {
       <DragDropContext
         onDragStart={handleDragStart}
         onDragUpdate={handleDragUpdate}
-        onDragEnd={(e) => {
-          console.log("drag end event from dragdropcontext: ", e);
-          handleDragEnd();
-        }}
+        onDragEnd={handleDragEnd}
       >
         <div {...getTableProps()} onMouseUp={handleDragEnd} className="table">
           <Header headerProps={headerProps} />

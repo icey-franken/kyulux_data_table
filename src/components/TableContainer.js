@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Table from "./Table";
 
-// filtering start https://blog.logrocket.com/building-styling-tables-react-table-v7/#filtering
-// freeze header pane https://codesandbox.io/s/k9n3y82wov
-
 // here we set up table data and columns
 export default function TableContainer() {
   const [tableData, setTableData] = useState([]);
@@ -12,7 +9,6 @@ export default function TableContainer() {
   useEffect(() => {
     async function getData() {
       let skip = 0;
-      // TODO: !!!skip<3000 because too slow otherwise... this is a problem
       while (skip < 3000) {
         const res = await fetch(
           `https://api.fda.gov/food/event.json?limit=1000&skip=${skip}`
@@ -41,14 +37,10 @@ export default function TableContainer() {
       if (Array.isArray(subRow.outcomes)) {
         subRow.outcomes = subRow.outcomes.join("; ");
       }
-
       // turn array of reactions into ';' separated string
       if (Array.isArray(subRow.reactions)) {
         subRow.reactions = subRow.reactions.join("; ");
       }
-
-      //TODO: convert dates to common format
-
       // flatten products - multiple products may be responsible for the same adverse reaction. We include these as separate rows.
       if (Array.isArray(row.products)) {
         row.products.forEach((product) => {
@@ -60,21 +52,6 @@ export default function TableContainer() {
     });
     return flatData;
   }, [tableData]);
-
-  // function to calculate default column width
-  // eslint-disable-next-line
-  const getColumnWidth = (rows, accessor, headerText) => {
-    // pass in page, NOT rows - rows too much data and no benefit
-    const maxWidth = 400;
-    const magicSpacing = 10;
-    const rowLenArr = rows.map((row) => {
-      return (`${row[accessor]}` || "").length;
-    });
-    const potentialLenArr = [...rowLenArr, headerText.length];
-    const cellLength = Math.max(...potentialLenArr);
-    const result = Math.min(maxWidth, cellLength * magicSpacing);
-    return result;
-  };
 
   // define table columns
   const columns = useMemo(
@@ -123,8 +100,6 @@ export default function TableContainer() {
       {
         Header: "Outcomes",
         accessor: "outcomes",
-        // width: 200,
-        // width: getColumnWidth(data, "outcomes", "Outcomes"),
         filter: "text",
       },
       {
@@ -139,18 +114,12 @@ export default function TableContainer() {
           {
             Header: "Industry Name",
             accessor: "products.industry_name",
-            // width: getColumnWidth(
-            //   data,
-            //   "products.industry_name",
-            //   "Industry Name"
-            // ),
             width: 200,
             filter: "text",
           },
           {
             Header: "Name Brand",
             accessor: "products.name_brand",
-            // width: getColumnWidth(data, "products.name_brand", "Name Brand"),
             width: 200,
             filter: "text",
           },
@@ -165,7 +134,6 @@ export default function TableContainer() {
       {
         Header: "Reactions",
         accessor: "reactions",
-        // width: getColumnWidth(data, "reactions", "Reactions"),
         filter: "text",
       },
     ],

@@ -42,7 +42,7 @@ export default function Pagination({ paginationProps }) {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             gotoPage(page);
           }}
-          style={{ width: "100px" }}
+          style={{ width: "80px" }}
         />
       </span>{" "}
       <select
@@ -51,7 +51,7 @@ export default function Pagination({ paginationProps }) {
           setPageSize(Number(e.target.value));
         }}
       >
-        {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+        {[10, 20, 30, 40, 50].map((pageSize) => (
           <option key={pageSize} value={pageSize}>
             Show {pageSize}
           </option>
